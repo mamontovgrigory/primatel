@@ -7,7 +7,6 @@ var config = {
     entry: './app/index',
     output: {
         path: __dirname + "/public",
-        //publicPath: 'public/',
         filename: 'bundle.js'
     },
     module: {
@@ -15,10 +14,7 @@ var config = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015']
-                }
+                loader: 'babel-loader'
             },
             {
                 test: /\.jsx$/,
@@ -53,11 +49,13 @@ var config = {
             'NODE_ENV': JSON.stringify(NODE_ENV)
         }),
         new HtmlWebpackPlugin({
-            title: 'ladony',
+            title: 'Primatel',
             template: __dirname + '/index.html'
         }),
         new webpack.ProvidePlugin({
-            riot: 'riot',
+            React: "react",
+            ReactDOM: "react-dom",
+            moment: 'moment',
             $: 'jquery',
             jQuery: 'jquery',
             _: 'lodash'
