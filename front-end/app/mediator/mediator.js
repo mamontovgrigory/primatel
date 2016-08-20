@@ -1,5 +1,4 @@
 import channels from './channels';
-import paths from './paths';
 
 class Mediator{
     constructor(){
@@ -27,17 +26,13 @@ class Mediator{
 const mediator = new Mediator;
 //export default mediator;
 
-if(channels && paths){
+if(channels){
     _.forEach(channels, function(properties) {
         mediator.subscribe(properties, function(data, callback){
-            if(properties.path){
-                var pathArr = _.without(properties.path.split('/'), '');
-                var fn = paths[pathArr[0]][pathArr[1]][pathArr[2]];
-                if(fn && typeof(fn) === 'function'){
-                    var result = fn(data);
-                    if(typeof(callback) === 'function'){
-                        callback(result);
-                    }
+            if(properties.method && typeof(properties.method) === 'function'){
+                var result = properties.method(data);
+                if(typeof(callback) === 'function'){
+                    callback(result);
                 }
             }
         });
