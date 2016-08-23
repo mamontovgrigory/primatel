@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "Cold server": "set NODE_ENV=development && webpack-dev-server --color",
+    "Cold server": "set NODE_ENV=development && webpack-dev-server --watch-poll --color",
     "Debug": "set NODE_ENV=development && webpack -d",
     "Publish": "set NODE_ENV=production && webpack --progress -p"
   },
@@ -34,6 +34,7 @@
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "lodash": "^4.15.0",
+    "material-icons": "^0.1.0",
     "materialize-css": "^0.97.6",
     "moment": "^2.14.1",
     "node-sass": "^3.7.0",
@@ -43,6 +44,8 @@
     "react-router": "^2.0.1",
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.0",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^2.3.1",
     "url-loader": "^0.5.6",
     "webpack-dev-server": "^1.14.1"
   }

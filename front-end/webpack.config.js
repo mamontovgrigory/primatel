@@ -35,8 +35,11 @@ var config = {
             },
             {
                 test: /\.less$/,
-                loader: "style-loader!css-loader!less-loader",
-                exclude: [/node_modules/]
+                loader: "style-loader!css-loader!less-loader"
+            },
+            {
+                test: /\.styl$/,
+                loader: 'style-loader!css-loader!stylus-loader'
             },
             {
                 test: /\.(png|jpg|gif|ico|svg|ttf|eot|woff|woff2)$/,

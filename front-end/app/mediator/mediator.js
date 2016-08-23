@@ -1,13 +1,8 @@
-import channels from './channels';
+function Mediator(){
+    this.channels = {};
 
-class Mediator{
-    constructor(){
-        this.channels = {};
-
-
-    }
-    publish(properties) {
-        if (!this.channels[properties.channel]) return false;
+    this.publish = function(properties) {
+        if (!properties || !this.channels[properties.channel]) return false;
         var args = Array.prototype.slice.call(arguments, 1);
         for (var i = 0, l = this.channels[properties.channel].length; i < l; i++) {
             var subscription = this.channels[properties.channel][i];
@@ -15,31 +10,13 @@ class Mediator{
             subscription.callback.apply(subscription.context, args);
         }
         return this;
-    }
-    subscribe(properties, fn) {
+    };
+
+    this.subscribe = function(properties, fn) {
         if (!this.channels[properties.channel]) this.channels[properties.channel] = [];
         this.channels[properties.channel].push({ context: this, callback: fn });
         return this;
     }
 }
 
-const mediator = new Mediator;
-//export default mediator;
-
-if(channels){
-    _.forEach(channels, function(properties) {
-        mediator.subscribe(properties, function(data, callback){
-            if(properties.method && typeof(properties.method) === 'function'){
-                var result = properties.method(data);
-                if(typeof(callback) === 'function'){
-                    callback(result);
-                }
-            }
-        });
-    });
-}
-
-mediator.publish(channels.LOGIN_GET_LIST, null, function(result){
-    console.log('result', result)
-});
-//window.mediator = new Mediator;
+module.exports = new Mediator;

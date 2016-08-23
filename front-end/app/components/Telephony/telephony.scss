@@ -1,0 +1,16 @@
+@import "../../constants/constants";
+
+#telephony{
+  .note{
+    font-size: 12px;
+    color: #9e9e9e;
+    text-align: right;
+  }
+
+  .info-cell{
+    cursor: pointer;
+    &:hover{
+      background: $system-panel-color
+    }
+  }
+}
