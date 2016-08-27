@@ -9,6 +9,7 @@
 
   .info-cell{
     cursor: pointer;
+    @include transition(background 0.5s ease-out);
     &:hover{
       background: $system-panel-color
     }

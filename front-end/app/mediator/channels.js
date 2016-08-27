@@ -28,11 +28,18 @@ export default {
     'TELEPHONY_GET_CALLS_TOTALS': {
         'channel': 'TELEPHONY_GET_CALLS_TOTALS',
         'method': TelephonyStore.getCallTotals,
-        'title': 'Get clients list',
+        'title': 'Get calls totals',
         'type': 'function',
         'response': {
             'type': 'array',
             'items': 'string'
         }
+    },
+
+    'TELEPHONY_GET_CALLS_DETAILS': {
+        'channel': 'TELEPHONY_GET_CALLS_DETAILS',
+        'method': TelephonyStore.getCallsDetails,
+        'title': 'Get calls details',
+        'type': 'function',
     }
 };

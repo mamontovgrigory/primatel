@@ -1,0 +1,8 @@
+@import "../../constants/constants";
+@import "./audioplayer.css";
+
+.audioplayer{
+  box-shadow: none;
+  border-color: transparent;
+  @include linear-gradient(top, $system-panel-color, $system-panel-alternative-color);
+}

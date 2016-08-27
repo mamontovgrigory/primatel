@@ -2,3 +2,20 @@ $system-panel-color: #26A69A;
 $system-panel-alternative-color: #1F897F;
 
 $system-background-color: #FFFFFF;
+
+@mixin transition($args...) {
+  -webkit-transition: $args;
+  -moz-transition: $args;
+  -ms-transition: $args;
+  -o-transition: $args;
+  transition: $args;
+}
+
+@mixin linear-gradient($args...){
+  background: -webkit-gradient( $args );
+  background: -webkit-linear-gradient( $args );
+  background: -moz-linear-gradient( $args );
+  background: -ms-radial-gradient( $args );
+  background: -o-linear-gradient( $args );
+  background: linear-gradient( $args );
+}

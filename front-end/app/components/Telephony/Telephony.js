@@ -6,7 +6,8 @@ export default class Telephony extends React.Component{
 
         this.state = {
             clients: [],
-            callsTotals: []
+            callsTotals: [],
+            callsDetails: []
         };
     }
     componentWillMount(){
@@ -32,6 +33,22 @@ export default class Telephony extends React.Component{
             self.setState({
                 callsTotals: result
             });
+        });
+    }
+    infoCellClickHandler(){
+        var self = this;
+        mediator.publish(channels.TELEPHONY_GET_CALLS_DETAILS, null, function(result){
+            self.setState({
+                callsDetails: result
+            });
+        });
+
+        var $modal = $('#modal1');
+        $modal.openModal({
+            ready: function() {
+                $('audio').audioPlayer();
+            },
+            complete: function() { console.log('Closed'); } // Callback for Modal close
         });
     }
     render(){
@@ -84,7 +101,7 @@ export default class Telephony extends React.Component{
                                             <th>{el.name}</th>
                                             {
                                                 el.data.map((cell) => {
-                                                    return <td className="center info-cell">{cell}</td>
+                                                    return <td className="center info-cell" onClick={() => this.infoCellClickHandler()}>{cell}</td>
                                                 })
                                             }
                                         </tr>
@@ -93,6 +110,39 @@ export default class Telephony extends React.Component{
                             }
                         </tbody>
                     </table>
+                </div>
+
+                <div id="modal1" className="modal modal-fixed-footer">
+                    <div className="modal-content">
+                        <h4>Ауди Варшавка 06.08.2016</h4>
+                        <table className="bordered">
+                            <tbody>
+                                <tr>
+                                    <td>Дата и время</td>
+                                    <td>Исходящий</td>
+                                    <td>Входящий</td>
+                                    <td>Длительность</td>
+                                    <td>Запись</td>
+                                </tr>
+                                {
+                                    this.state.callsDetails.map((el) => {
+                                        return (
+                                            <tr>
+                                                <td>{el.datetime}</td>
+                                                <td>{el.numFrom}</td>
+                                                <td>{el.numTo}</td>
+                                                <td>{el.duration}</td>
+                                                <td style={{'min-width': '300px'}}><audio src={require('./content/02_rammstein_gib_mir_deine_augen_myzuka.fm.mp3')}></audio></td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="modal-footer">
+                        <a className="modal-action modal-close waves-effect waves-light btn">Закрыть</a>
+                    </div>
                 </div>
             </div>
         );

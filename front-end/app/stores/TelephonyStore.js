@@ -27,6 +27,59 @@ class TelephonyStore extends React.Component{
             }
         ]);
     }
+
+    getCallsDetails(properties, callback){
+        callback([
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            },
+            {
+                datetime: '09:19:21 01.07.2016',
+                numFrom: '+7 (921) 940-00-99',
+                numTo: '+7 (499) 641-36-65',
+                duration: 126
+            }
+        ]);
+    }
 }
 
 const telephonyStore = new TelephonyStore;
