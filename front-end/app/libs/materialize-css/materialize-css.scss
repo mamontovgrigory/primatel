@@ -5,11 +5,20 @@ nav, .panel{
 }
 
 .modal{
-  width: 90%;
+  max-width: 90%;
+  max-height: 80%;
+  &.modal-fixed-footer{
+    width: 90%;
+    height: 80%;
+  }
 }
 
 .divider{
   clear: both;
+}
+
+.text-center{
+  text-align: center;
 }
 
 .m-t-10{

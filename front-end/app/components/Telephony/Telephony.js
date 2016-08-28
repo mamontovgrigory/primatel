@@ -41,14 +41,17 @@ export default class Telephony extends React.Component{
             self.setState({
                 callsDetails: result
             });
-        });
-
-        var $modal = $('#modal1');
-        $modal.openModal({
-            ready: function() {
-                $('audio').audioPlayer();
-            },
-            complete: function() { console.log('Closed'); } // Callback for Modal close
+            var $modal = $('#modal1');
+            $modal.openModal({
+                ready: function() {
+                    $('audio').audioPlayer();
+                },
+                complete: function() {
+                    self.setState({
+                        callsDetails: []
+                    });
+                }
+            });
         });
     }
     render(){
@@ -118,11 +121,11 @@ export default class Telephony extends React.Component{
                         <table className="bordered">
                             <tbody>
                                 <tr>
-                                    <td>Дата и время</td>
-                                    <td>Исходящий</td>
-                                    <td>Входящий</td>
-                                    <td>Длительность</td>
-                                    <td>Запись</td>
+                                    <td className="text-center">Дата и время</td>
+                                    <td className="text-center">Исходящий</td>
+                                    <td className="text-center">Входящий</td>
+                                    <td className="text-center">Длительность</td>
+                                    <td className="text-center">Запись</td>
                                 </tr>
                                 {
                                     this.state.callsDetails.map((el) => {
@@ -132,7 +135,7 @@ export default class Telephony extends React.Component{
                                                 <td>{el.numFrom}</td>
                                                 <td>{el.numTo}</td>
                                                 <td>{el.duration}</td>
-                                                <td style={{'min-width': '300px'}}><audio src={require('./content/02_rammstein_gib_mir_deine_augen_myzuka.fm.mp3')}></audio></td>
+                                                <td style={{'minWidth': '300px'}}><audio src={require('./content/02_rammstein_gib_mir_deine_augen_myzuka.fm.mp3')}></audio></td>
                                             </tr>
                                         )
                                     })

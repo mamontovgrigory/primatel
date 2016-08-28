@@ -4,6 +4,7 @@ import './libs/libs';
 import './app.scss';
 
 import Layout from './components/Layout';
+import Authorization from './components/Authorization/Authorization';
 import Telephony from './components/Telephony/Telephony';
 
 window.constants = require('./constants/constants');
@@ -25,7 +26,8 @@ const app = document.getElementById('app');
 ReactDOM.render(
     <Router history={hashHistory}>
         <Route path='/' component={Layout}>
-            <IndexRoute component={Telephony} breadcrumb='telephony' />
+            <IndexRoute component={Authorization} />
+            <Route path='telephony' component={Telephony} breadcrumb='telephony' />
         </Route>
     </Router>,
     app);

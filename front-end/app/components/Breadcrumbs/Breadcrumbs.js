@@ -8,24 +8,20 @@ export default class Breadcrumbs extends React.Component{
             breadcrumbs: []
         };
     }
-    componentWillMount(){
+    render(){
         var self = this;
         mediator.publish(channels.BREADCRUMBS_GET_LIST, {
-            breadcrumb: this.props.breadcrumb,
-            params: this.props.params
+            breadcrumb: self.props.breadcrumb,
+            params: self.props.params
         }, function(result){
-            self.setState({
-                breadcrumbs: result
-            });
+            self.breadcrumbs = result;
         });
-    }
-    render(){
         return (
             <nav className="panel row">
                 <div className="nav-wrapper container">
                     <div className="col s12">
                         {
-                            this.state.breadcrumbs.map((el) => {
+                            self.breadcrumbs.map((el) => {
                                 return <Link key={el.id} to={el.href} className="breadcrumb">{el.name}</Link>
                             })
                         }
