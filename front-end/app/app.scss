@@ -5,3 +5,36 @@ body{
   padding: 0;
 }
 
+nav, .panel{
+  background: $system-panel-color;
+}
+
+.pagination li.active{
+  background-color: $system-panel-color;
+}
+
+table{
+  td, th{
+    padding: 5px 5px;
+  }
+}
+
+.modal{
+  max-width: 90%;
+  max-height: 80%;
+  &.modal-fixed-footer{
+    width: 90%;
+    height: 80%;
+  }
+}
+
+
+.divider{
+  clear: both;
+}
+
+.audioplayer{
+  box-shadow: none;
+  border-color: transparent;
+  @include linear-gradient(top, $system-panel-color, $system-panel-alternative-color);
+}

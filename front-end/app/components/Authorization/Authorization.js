@@ -39,7 +39,7 @@ export default class Authorization extends React.Component{
     }
     render(){
         return (
-            <div className="row">
+            <div className="row m-t-10">
                 <div className="col s6 offset-s3">
                     <h4 className="center-align">Авторизация</h4>
                     <div className="row">

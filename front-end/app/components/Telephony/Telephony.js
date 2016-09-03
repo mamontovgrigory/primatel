@@ -135,13 +135,24 @@ export default class Telephony extends React.Component{
                                                 <td>{el.numFrom}</td>
                                                 <td>{el.numTo}</td>
                                                 <td>{el.duration}</td>
-                                                <td style={{'minWidth': '300px'}}><audio src={require('./content/02_rammstein_gib_mir_deine_augen_myzuka.fm.mp3')}></audio></td>
+                                                <td style={{'minWidth': '300px'}}>
+                                                    <audio src={require('./content/07_rammstein_spiel_mit_mir_myzuka.fm.mp3')} />
+                                                </td>
                                             </tr>
                                         )
                                     })
                                 }
                             </tbody>
                         </table>
+                        <ul className="pagination text-center">
+                            <li className="disabled"><a href="#!"><i className="material-icons">chevron_left</i></a></li>
+                            <li className="active"><a href="#!">1</a></li>
+                            <li className="waves-effect"><a href="#!">2</a></li>
+                            <li className="waves-effect"><a href="#!">3</a></li>
+                            <li className="waves-effect"><a href="#!">4</a></li>
+                            <li className="waves-effect"><a href="#!">5</a></li>
+                            <li className="waves-effect"><a href="#!"><i className="material-icons">chevron_right</i></a></li>
+                        </ul>
                     </div>
                     <div className="modal-footer">
                         <a className="modal-action modal-close waves-effect waves-light btn">Закрыть</a>

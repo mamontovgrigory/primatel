@@ -16,18 +16,23 @@ export default class Breadcrumbs extends React.Component{
         }, function(result){
             self.breadcrumbs = result;
         });
-        return (
-            <nav className="panel row">
-                <div className="nav-wrapper container">
-                    <div className="col s12">
-                        {
-                            self.breadcrumbs.map((el) => {
-                                return <Link key={el.id} to={el.href} className="breadcrumb">{el.name}</Link>
-                            })
-                        }
+        if(self.breadcrumbs.length){
+            return (
+                <nav className="panel row">
+                    <div className="nav-wrapper container">
+                        <div className="col s12">
+                            {
+                                self.breadcrumbs.map((el) => {
+                                    return <Link key={el.id} to={el.href} className="breadcrumb">{el.name}</Link>
+                                })
+                            }
+                        </div>
                     </div>
-                </div>
-            </nav>
-        )
+                </nav>
+            )
+        }else{
+            return <div></div>;
+        }
+
     }
 }

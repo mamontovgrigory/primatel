@@ -1,0 +1,59 @@
+.text-center{
+  text-align: center;
+}
+
+.display-inline-block{
+  display: inline-block!important;
+}
+
+.p-t-0{
+  padding-top: 0!important;
+}
+.p-l-0{
+  padding-left: 0!important;
+}
+.p-b-0{
+  padding-bottom: 0!important;
+}
+.p-r-0{
+  padding-right: 0!important;
+}
+
+.m-t-10{
+  margin-top: 10px!important;
+}
+.m-l-10{
+  margin-left: 10px!important;
+}
+.m-b-10{
+  margin-bottom: 10px!important;
+}
+.m-r-10{
+  margin-right: 10px!important;
+}
+
+
+
+//TODO: require icons from 'material-icons'
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'), local('MaterialIcons-Regular'), url(2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
