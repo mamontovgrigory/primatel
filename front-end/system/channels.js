@@ -1,6 +1,4 @@
 import BreadcrumbsStore from '../modules/Breadcrumbs/Breadcrumbs';
-import ClientsStore from '../modules/Clients/Clients';
-import TelephonyStore from '../modules/Telephony/Telephony';
 
 export default {
     'BREADCRUMBS_GET_LIST': {
@@ -16,7 +14,7 @@ export default {
 
     'CLIENTS_GET_LIST': {
         'channel': 'CLIENTS_GET_LIST',
-        'method': ClientsStore.getList,
+        'url': '/Api/Clients/Get',
         'title': 'Get clients list',
         'type': 'function',
         'response': {
@@ -27,7 +25,7 @@ export default {
 
     'TELEPHONY_GET_CALLS_TOTALS': {
         'channel': 'TELEPHONY_GET_CALLS_TOTALS',
-        'method': TelephonyStore.getCallTotals,
+        'url': '/Api/Telephony/GetCallTotals',
         'title': 'Get calls totals',
         'type': 'function',
         'response': {
@@ -38,7 +36,7 @@ export default {
 
     'TELEPHONY_GET_CALLS_DETAILS': {
         'channel': 'TELEPHONY_GET_CALLS_DETAILS',
-        'method': TelephonyStore.getCallsDetails,
+        'url': '/Api/Telephony/GetCallsDetails',
         'title': 'Get calls details',
         'type': 'function',
     }
