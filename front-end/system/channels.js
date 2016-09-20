@@ -23,6 +23,20 @@ export default {
         }
     },
 
+    'TELEPHONY_GET_SID': {
+        'channel': 'TELEPHONY_GET_SID',
+        'url': 'http://tp-api.primatel.ru/?svc=login&mode=json',
+        'title': 'Get Primatel API sid',
+        'type': 'object'
+    },
+
+    'TELEPHONY_LIST_USERS': {
+        'channel': 'TELEPHONY_LIST_USERS',
+        'url': 'http://tp-api.primatel.ru/?svc=listUsers&mode=json',
+        'title': 'Get Primatel API listUsers',
+        'type': 'object'
+    },
+
     'TELEPHONY_GET_CALLS_TOTALS': {
         'channel': 'TELEPHONY_GET_CALLS_TOTALS',
         'url': '/Api/Telephony/GetCallTotals',

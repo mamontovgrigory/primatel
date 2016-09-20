@@ -4,6 +4,22 @@ export default class Telephony extends React.Component{
     constructor(){
         super();
 
+        mediator.publish(channels.TELEPHONY_GET_SID, {
+            'login': 'tvtrade',
+            'password': 'iVnR6S5j2v6'
+        },
+        function(data){
+            var sid = data.data.sid;
+            mediator.publish(channels.TELEPHONY_LIST_USERS, {
+                'page_size': '100',
+                'page_number': '1',
+                'sid': sid
+            },
+            function(data){
+                console.log(data);
+            });
+        });
+
         this.state = {
             clients: [],
             callsTotals: [],
