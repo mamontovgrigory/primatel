@@ -3,34 +3,20 @@ import './telephony.scss';
 export default class Telephony extends React.Component{
     constructor(){
         super();
-
-        mediator.publish(channels.TELEPHONY_GET_SID, {
-            'login': 'tvtrade',
-            'password': 'iVnR6S5j2v6'
-        },
-        function(data){
-            var sid = data.data.sid;
-            mediator.publish(channels.TELEPHONY_LIST_USERS, {
-                'page_size': '100',
-                'page_number': '1',
-                'sid': sid
-            },
-            function(data){
-                console.log(data);
-            });
-        });
-
         this.state = {
             clients: [],
-            callsTotals: [],
+            callsTotals: {
+                dates: [],
+                data: []
+            },
             callsDetails: []
         };
     }
     componentWillMount(){
         var self = this;
-        mediator.publish(channels.CLIENTS_GET_LIST, null, function(result){
+        mediator.publish(channels.TELEPHONY_GET_LIST_USERS, null, function(result){
             self.setState({
-                clients: result
+                clients: typeof(result) === "string" ? JSON.parse(result) : result
             });
         });
     }
@@ -45,19 +31,31 @@ export default class Telephony extends React.Component{
     searchClickHandler(){
         var self = this;
         $('#clients-block').slideUp();
-        mediator.publish(channels.TELEPHONY_GET_CALLS_TOTALS, null, function(result){
+        mediator.publish(channels.TELEPHONY_GET_CALLS_TOTALS, {
+            "loginIds": [],
+            "from":"2016-09-18",
+            "to":"2016-09-24"
+        }, function(result){
             self.setState({
-                callsTotals: result
+                callsTotals: typeof(result) === "string" ? JSON.parse(result) : result
             });
         });
     }
-    infoCellClickHandler(){
+    infoCellClickHandler(login, date){
         var self = this;
-        mediator.publish(channels.TELEPHONY_GET_CALLS_DETAILS, null, function(result){
+        var loginObj = _.find(self.state.clients, function(c){
+            return c.login === login;
+        });
+        mediator.publish(channels.TELEPHONY_GET_CALLS_DETAILS, {
+            loginId: loginObj.id,
+            date: date
+        }, function(result){
             self.setState({
-                callsDetails: result
+                callsDetails: typeof(result) === "string" ? JSON.parse(result) : result
             });
+            console.log(typeof(result) === "string" ? JSON.parse(result) : result);
             var $modal = $('#modal1');
+            $modal.find('h4').html(login + ' ' + date);
             $modal.openModal({
                 ready: function() {
                     $('audio').audioPlayer();
@@ -71,6 +69,7 @@ export default class Telephony extends React.Component{
         });
     }
     render(){
+        var self = this;
         return (
             <div className="section" id="telephony">
                 <div className="row">
@@ -98,7 +97,7 @@ export default class Telephony extends React.Component{
                             return (
                                 <div className="input-field col s3" key={el.id}>
                                     <input type="checkbox" id={"client" + el.id} value={el.id} />
-                                    <label htmlFor={"client" + el.id}>{el.name}</label>
+                                    <label htmlFor={"client" + el.id}>{el.login}</label>
                                 </div>
                             )
                         })
@@ -110,17 +109,29 @@ export default class Telephony extends React.Component{
                         <i className="material-icons">swap_vert</i>
                     </a>
                 </div>
-                <div>
-                    <table className="bordered">
+                <div className="clear-both p-t-10">
+                    <table className={this.state.callsTotals.dates.length === 0 ? "hide" : "bordered"}>
                         <tbody>
+                            <tr>
+                                <th>Клиенты</th>
+                                {
+                                    this.state.callsTotals.dates.map((el, i) => {
+                                        return (
+                                            <th>{el}</th>
+                                        )
+                                    })
+                                }
+                            </tr>
                             {
-                                this.state.callsTotals.map((el) => {
+                                Object.keys(this.state.callsTotals.data).map(function(login) {
+                                    var loginData = self.state.callsTotals.data[login];
                                     return (
-                                        <tr key={el.id}>
-                                            <th>{el.name}</th>
+                                        <tr>
+                                            <th>{login}</th>
                                             {
-                                                el.data.map((cell) => {
-                                                    return <td className="center info-cell" onClick={() => this.infoCellClickHandler()}>{cell}</td>
+                                                loginData.map((el, i) => {
+                                                    return <td className="center info-cell"
+                                                               onClick={() => self.infoCellClickHandler(login, self.state.callsTotals.dates[i])}>{el}</td>
                                                 })
                                             }
                                         </tr>
@@ -133,23 +144,23 @@ export default class Telephony extends React.Component{
 
                 <div id="modal1" className="modal modal-fixed-footer">
                     <div className="modal-content">
-                        <h4>Ауди Варшавка 06.08.2016</h4>
+                        <h4></h4>
                         <table className="bordered">
                             <tbody>
                                 <tr>
-                                    <td className="text-center">Дата и время</td>
-                                    <td className="text-center">Исходящий</td>
-                                    <td className="text-center">Входящий</td>
-                                    <td className="text-center">Длительность</td>
-                                    <td className="text-center">Запись</td>
+                                    <td>Дата и время</td>
+                                    <td>Исходящий</td>
+                                    <td>Входящий</td>
+                                    <td>Длительность</td>
+                                    <td>Запись</td>
                                 </tr>
                                 {
                                     this.state.callsDetails.map((el) => {
                                         return (
                                             <tr>
-                                                <td>{el.datetime}</td>
-                                                <td>{el.numFrom}</td>
-                                                <td>{el.numTo}</td>
+                                                <td>{el.time}</td>
+                                                <td>{el.numfrom}</td>
+                                                <td>{el.numto}</td>
                                                 <td>{el.duration}</td>
                                                 <td style={{'minWidth': '300px'}}>
                                                     <audio src={require('./content/07_rammstein_spiel_mit_mir_myzuka.fm.mp3')} />

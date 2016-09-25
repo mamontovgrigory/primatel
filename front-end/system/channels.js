@@ -12,34 +12,21 @@ export default {
         }
     },
 
-    'CLIENTS_GET_LIST': {
-        'channel': 'CLIENTS_GET_LIST',
-        'url': '/Api/Clients/Get',
+    'TELEPHONY_GET_LIST_USERS': {
+        'channel': 'TELEPHONY_GET_LIST_USERS',
+        //'url': 'ajax/get_list_users.php',
+        'url': 'http://localhost/primatel/ajax/get_list_users.php',
         'title': 'Get clients list',
         'type': 'function',
         'response': {
             'type': 'array',
-            'items': 'string'
+            'items': 'object'
         }
-    },
-
-    'TELEPHONY_GET_SID': {
-        'channel': 'TELEPHONY_GET_SID',
-        'url': 'http://tp-api.primatel.ru/?svc=login&mode=json',
-        'title': 'Get Primatel API sid',
-        'type': 'object'
-    },
-
-    'TELEPHONY_LIST_USERS': {
-        'channel': 'TELEPHONY_LIST_USERS',
-        'url': 'http://tp-api.primatel.ru/?svc=listUsers&mode=json',
-        'title': 'Get Primatel API listUsers',
-        'type': 'object'
     },
 
     'TELEPHONY_GET_CALLS_TOTALS': {
         'channel': 'TELEPHONY_GET_CALLS_TOTALS',
-        'url': '/Api/Telephony/GetCallTotals',
+        'url': 'http://localhost/primatel/ajax/get_calls_totals.php',
         'title': 'Get calls totals',
         'type': 'function',
         'response': {
@@ -50,7 +37,7 @@ export default {
 
     'TELEPHONY_GET_CALLS_DETAILS': {
         'channel': 'TELEPHONY_GET_CALLS_DETAILS',
-        'url': '/Api/Telephony/GetCallsDetails',
+        'url': 'http://localhost/primatel/ajax/get_calls_details.php',
         'title': 'Get calls details',
         'type': 'function',
     }

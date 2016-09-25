@@ -3,6 +3,7 @@ date_default_timezone_set("Europe/Moscow");
 include "database.php";
 
 class Telephony{
+	public $date_format = "Y-m-d";
 	public $datetime_format = "Y-m-d H:i:s";
 	
 	private $url = "http://tp-api.primatel.ru/";
@@ -56,8 +57,7 @@ class Telephony{
 			currency VARCHAR,
 			callid VARCHAR UNIQUE,
 			disposition VARCHAR
-		);");
-		$this->login();
+		);");		
 	}
 	
 	private function primatelApi($svc = "login", $query_params = array()){
@@ -91,6 +91,7 @@ class Telephony{
 	}
 	
 	public function listUsers(){
+		$this->login();
 		$data = $this->primatelApi("listUsers");
 		return $data;
 	}	
@@ -121,6 +122,7 @@ class Telephony{
 		$from = date($this->datetime_format, strtotime('-7 days'));
 		$to = date($this->datetime_format);
 		
+		$this->login();
 		while($res = $result->fetchArray()){
 			$params = array(
 				"user_login" => $res["login"],
@@ -135,39 +137,56 @@ class Telephony{
 		}
 	}
 	
-	public function getCallsTotals($from = null, $to = null){
+	public function getCallsTotals($from = null, $to = null, $login_ids = array()){
 		$from = $from ? $from :  date($this->datetime_format, strtotime('-7 days'));
 		$to = $to ? $to : date($this->datetime_format);
-		$result = $this->db->exec("
+		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
+		$query = "
 			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM list_users lu
 			JOIN list_sips ls ON ls.login_id = lu.id
 			JOIN calls_details cd ON cd.sip_login_id = ls.id
-			GROUP BY lu.login, DATE(cd.time)
-			AND date BETWEEN '".date($this->datetime_format,strtotime($from))."' AND '".date($this->datetime_format,strtotime($to))."'");
-		$result_array = array();
-		var_dump("SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM list_users lu
-			JOIN list_sips ls ON ls.login_id = lu.id
-			JOIN calls_details cd ON cd.sip_login_id = ls.id
-			GROUP BY lu.login, DATE(cd.time)
-			--AND date BETWEEN '".date($this->datetime_format,strtotime($from))."' AND '".date($this->datetime_format,strtotime($to))."'");
-		while($res = $result->fetchArray()){
-			//array_push($result_array, $res);
-			var_dump($res);
+			WHERE date BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to))."'".$and."
+			GROUP BY DATE(cd.time), lu.login";
+			
+		$result = $this->db->query($query);
+		$result_array = array(
+			"dates" => array(),
+			"data" => array()
+		);
+		
+		$template_array = array();
+		for($i = strtotime($from); $i <= strtotime($to); $i += 86400){
+			array_push($result_array["dates"], date($this->date_format,$i));
+			array_push($template_array, 0);
 		}
+		
+		while($res = $result->fetchArray()){
+			$login_array = array(
+				"login" => $res["login"],
+				"data" => array()
+			);
+			$key = array_search($res["date"], $result_array["dates"]);
+			if(!array_key_exists($res["login"], $result_array["data"])){
+				$result_array["data"][$res["login"]] = $template_array;
+			}
+			$result_array["data"][$res["login"]][$key] = $res["count"];
+		}
+		return $result_array;
 	}
 	
 	public function updateCallsDetails(){
 		$result = $this->db->query("SELECT * FROM ".$this->list_sips_table);
 		$from = date($this->datetime_format, strtotime('-7 days'));
 		$to = date($this->datetime_format);
+		$this->login();
 		while($sip = $result->fetchArray()){
 			$total = 0;
 			$page_number = 1;
 			$page_size = 100;
 			do{
-				echo "<pre>";
+				/*echo "<pre>";
 				var_dump($sip["sip_login"]);
-				echo "</pre>";
+				echo "</pre>";*/
 				
 				$params = array(
 					"sip_login" => $sip["sip_login"],
@@ -193,10 +212,18 @@ class Telephony{
 		}
 	}
 	
+	public function getCallsDetails($login_id, $date){
+		$query = "SELECT cd.* FROM list_users lu JOIN list_sips ls ON ls.login_id = lu.id JOIN calls_details cd ON cd.sip_login_id = ls.id WHERE DATE(cd.time) = '".date($this->date_format,strtotime($date))."' AND lu.id = ".$login_id;
+		$result = $this->db->query($query);
+		$result_array = array();
+		while($res = $result->fetchArray()){
+			array_push($result_array, $res);
+		}			
+		return $result_array;
+	}
+	
 	public function update(){
-		echo "update";
-		echo date($this->datetime_format,strtotime("2016-09-18"));
-		$this->getCallsTotals();
+		echo "update";		
 		//$this->updateListUsers();
 		//$this->updateSips();
 		//$this->updateCallsDetails();

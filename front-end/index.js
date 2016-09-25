@@ -13,7 +13,7 @@ if(channels && mediator){
         mediator.subscribe(properties, function(data, callback){
             if(properties.url || properties.remoteUrl){
                 $.ajax({
-                    url: properties.url.indexOf('http://') === -1 ? 'http://localhost:8080' + properties.url : properties.url,
+                    url: properties.url,
                     data: data,
                     success: function(response){
                         if(callback && typeof(callback) === 'function'){

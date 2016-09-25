@@ -7,7 +7,7 @@ var config = {
     entry: './index',
     output: {
         path: __dirname + "/public",
-        filename: 'bundle.js'
+        filename: '[hash].bundle.js'
     },
     module: {
         loaders: [
