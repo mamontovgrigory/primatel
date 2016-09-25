@@ -3,7 +3,11 @@ import './telephony.scss';
 export default class Telephony extends React.Component{
     constructor(){
         super();
+
+        this.dateFormat = "YYYY-MM-DD";
         this.state = {
+            from: moment().add(-7, 'days').format(system.format.date),
+            to: moment().format(system.format.date),
             clients: [],
             callsTotals: {
                 dates: [],
@@ -21,20 +25,32 @@ export default class Telephony extends React.Component{
         });
     }
     componentDidMount(){
+        var self = this;
+        //Materialize.updateTextFields();
         $('.datepicker').pickadate({
-            format: constants.dateFormat
+            format: constants.dateFormat,
+            onSet: function(test) {
+                console.log($(this), test, moment(test).format(self.dateFormat));
+                $(this).trigger('change');
+            }
         });
     }
     slideClickHandler(){
         $('#clients-block').slideToggle();
+    }
+    dateFromChangeHandler(e){
+        console.log(e);
+    }
+    dateToChangeHandler(e){
+        console.log(e);
     }
     searchClickHandler(){
         var self = this;
         $('#clients-block').slideUp();
         mediator.publish(channels.TELEPHONY_GET_CALLS_TOTALS, {
             "loginIds": [],
-            "from":"2016-09-18",
-            "to":"2016-09-24"
+            "from": self.state.from,
+            "to": self.state.to
         }, function(result){
             self.setState({
                 callsTotals: typeof(result) === "string" ? JSON.parse(result) : result
@@ -53,9 +69,8 @@ export default class Telephony extends React.Component{
             self.setState({
                 callsDetails: typeof(result) === "string" ? JSON.parse(result) : result
             });
-            console.log(typeof(result) === "string" ? JSON.parse(result) : result);
             var $modal = $('#modal1');
-            $modal.find('h4').html(login + ' ' + date);
+            $modal.find('h4').html(login + ' ' + moment(date).format(system.format.date));
             $modal.openModal({
                 ready: function() {
                     $('audio').audioPlayer();
@@ -74,11 +89,13 @@ export default class Telephony extends React.Component{
             <div className="section" id="telephony">
                 <div className="row">
                     <div className="input-field col s3">
-                        <input type="date" id="date_from" className="datepicker" />
+                        <input type="date" id="date_from" className="datepicker"
+                               defaultValue={this.state.from} onChange={this.dateFromChangeHandler.bind(this)}/>
                         <label htmlFor="date_from">Перид с</label>
                     </div>
                     <div className="input-field col s3">
-                        <input type="date" id="date_to" className="datepicker" />
+                        <input type="date" id="date_to" className="datepicker"
+                               defaultValue={this.state.to} onChange={this.dateToChangeHandler.bind(this)}/>
                         <label htmlFor="date_to">Период по</label>
                     </div>
                     <div className="input-field col s3">
@@ -115,9 +132,9 @@ export default class Telephony extends React.Component{
                             <tr>
                                 <th>Клиенты</th>
                                 {
-                                    this.state.callsTotals.dates.map((el, i) => {
+                                    this.state.callsTotals.dates.map((el) => {
                                         return (
-                                            <th>{el}</th>
+                                            <th>{moment(el).format(system.format.date)}</th>
                                         )
                                     })
                                 }
@@ -158,7 +175,7 @@ export default class Telephony extends React.Component{
                                     this.state.callsDetails.map((el) => {
                                         return (
                                             <tr>
-                                                <td>{el.time}</td>
+                                                <td>{moment(el.time).format(system.format.datetime)}</td>
                                                 <td>{el.numfrom}</td>
                                                 <td>{el.numto}</td>
                                                 <td>{el.duration}</td>

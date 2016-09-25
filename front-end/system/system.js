@@ -55,5 +55,10 @@ module.exports = {
     },
     template: {
         name: 'Material'
+    },
+    format: {
+        time: "HH:mm:ss",
+        datetime: "HH:mm:ss DD.MM.YYYY",
+        date: "DD.MM.YYYY"
     }
 };
