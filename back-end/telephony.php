@@ -52,7 +52,7 @@ class Telephony{
 		");
 	}
 	
-	private function primatelApi($svc = "login", $query_params = array()){
+	private function primatelApi($svc = "login", $query_params = array(), $json = true){
 		$string_params = array(
 			"svc" => $svc,
 			"mode" => $this->mode
@@ -70,11 +70,16 @@ class Telephony{
 			)
 		)));
 
-		try{
-			return json_decode($result);
-		}catch(Exception $e){
-			return NULL;
-		}		
+		if($json){
+			try{
+				return json_decode($result);
+			}catch(Exception $e){
+				return NULL;
+			}
+		}else{
+			return $result;
+		}
+				
 	}
 	
 	public function login(){
@@ -92,7 +97,7 @@ class Telephony{
 		$data = $this->listUsers();		
 		
 		foreach($data->data->data as $data_arr){
-			$this->db->query("REPLACE INTO ".$this->list_users_table." (".implode(",", $data->data->names).") VALUES ('".implode("','", $data_arr)."')");	
+			$this->db->query("INSERT INTO ".$this->list_users_table." (".implode(",", $data->data->names).") VALUES ('".implode("','", $data_arr)."')");	
 		}
 	}
 	
@@ -124,7 +129,7 @@ class Telephony{
 			$data = $this->primatelApi("getCallsTotals", $params);
 			$key = array_search("login", $data->data->names);		
 			foreach($data->data->data as $data_arr){
-				$this->db->query("REPLACE INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
+				$this->db->query("INSERT INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
 			}
 		}
 	}
@@ -138,8 +143,8 @@ class Telephony{
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id
 			WHERE cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
-			GROUP BY DATE(cd.time), lu.login";
-			
+			GROUP BY DATE(cd.time), lu.login
+			ORDER BY cd.time";		
 		$result = $this->db->query($query);
 
 		$result_array = array(
@@ -153,22 +158,28 @@ class Telephony{
 			array_push($template_array, 0);
 		}
 		
-		while($res = $result->fetch_assoc()){
-			$login_array = array(
-				"login" => $res["login"],
-				"data" => array()
-			);
-			$key = array_search($res["date"], $result_array["dates"]);
-			if(!array_key_exists($res["login"], $result_array["data"])){
-				$result_array["data"][$res["login"]] = $template_array;
+		if($result){
+			while($res = $result->fetch_assoc()){
+				$login_array = array(
+					"login" => $res["login"],
+					"data" => array()
+				);
+				$key = array_search($res["date"], $result_array["dates"]);
+				if(!array_key_exists($res["login"], $result_array["data"])){
+					$result_array["data"][$res["login"]] = $template_array;
+				}
+				$result_array["data"][$res["login"]][$key] = $res["count"];
 			}
-			$result_array["data"][$res["login"]][$key] = $res["count"];
 		}
+		
 		return $result_array;
 	}
 	
 	public function updateCallsDetails(){
-		$result = $this->db->query("SELECT * FROM ".$this->list_sips_table);
+		$result = $this->db->query("
+			SELECT ls.*, lu.login FROM `".$this->list_sips_table."` as ls
+			LEFT JOIN `".$this->list_users_table."`as lu ON lu.id = ls.login_id
+		");
 		$from = date($this->datetime_format, strtotime('-7 days'));
 		$to = date($this->datetime_format);
 		$this->login();
@@ -177,10 +188,6 @@ class Telephony{
 			$page_number = 1;
 			$page_size = 100;
 			do{
-				/*echo "<pre>";
-				var_dump($sip["sip_login"]);
-				echo "</pre>";*/
-				
 				$params = array(
 					"sip_login" => $sip["sip_login"],
 					"from" => $from,
@@ -197,22 +204,38 @@ class Telephony{
 				}
 				$page_number++;
 				foreach($data->data->data as $data_arr){
-					$time_key = array_search("time", $data->data->names);
-					//$time = array_shift(array_slice($data_arr, $time_key, 1));
-					$this->db->query("REPLACE INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
+					$call_id_key = array_search("callid", $data->data->names);
+					$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
+					$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
 				}
 			} while($total >= $page_size);
 		}
 	}
 	
 	public function getCallsDetails($login_id, $date){
-		$query = "SELECT cd.* FROM list_users lu JOIN list_sips ls ON ls.login_id = lu.id JOIN calls_details cd ON cd.sip_login_id = ls.id WHERE DATE(cd.time) = '".date($this->date_format,strtotime($date))."' AND lu.id = ".$login_id;
+		$query = "
+			SELECT cd.* FROM ".$this->list_users_table." lu 
+			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
+			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
+			WHERE DATE(cd.time) = '".date($this->date_format,strtotime($date))."' 
+			AND lu.id = ".$login_id;
 		$result = $this->db->query($query);
 		$result_array = array();
 		while($res = $result->fetch_assoc()){
 			array_push($result_array, $res);
 		}			
 		return $result_array;
+	}
+	
+	public function downloadCallRecord($user_login, $call_id){
+		$this->login();
+		$data = $this->primatelApi("downloadCallRecord", array(
+			"user_login" => $user_login,
+			"call_id" => $call_id
+		), false);
+		$filename = __DIR__."/records/".$call_id.".mp3";
+		if(!file_exists($filename))
+			file_put_contents($filename, $data);
 	}
 	
 	public function update(){
