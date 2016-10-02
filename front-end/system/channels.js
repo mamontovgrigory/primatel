@@ -14,7 +14,6 @@ export default {
 
     'TELEPHONY_GET_LIST_USERS': {
         'channel': 'TELEPHONY_GET_LIST_USERS',
-        //'url': 'ajax/get_list_users.php',
         'url': 'http://localhost/primatel/ajax/get_list_users.php',
         'title': 'Get clients list',
         'type': 'function',
