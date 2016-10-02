@@ -11,7 +11,7 @@ class Telephony{
 	private $password = "iVnR6S5j2v6";
 	private $mode = "json";
 	private $sid;
-	private $db_name = __DIR__."/telephony.db";
+	private $db_name = "telephony";
 	private $db;
 	private $list_users_table = "list_users";
 	//private $calls_totals_table = "calls_totals";
@@ -19,45 +19,37 @@ class Telephony{
 	private $calls_details_table = "calls_details";
 	
 	function __construct() {
-		$this->db = new Database($this->db_name);		
-		$this->db->exec("
-			CREATE TABLE IF NOT EXISTS ".$this->list_users_table." (
-			id INTEGER PRIMARY KEY, 
-			login VARCHAR UNIQUE, 
-			balance VARCHAR, 
-			symbol VARCHAR
-		)");	
-		/*$this->db->exec("CREATE TABLE IF NOT EXISTS ".$this->calls_totals_table." (
-			id             INTEGER PRIMARY KEY,
-			login          VARCHAR,
-			inbound_count  VARCHAR,
-			inbound_time   VARCHAR,
-			outbound_count VARCHAR,
-			outbound_time  VARCHAR,
-			amount         VARCHAR,
-			currency       VARCHAR
-		);");*/
-		$this->db->exec("
+		$this->db = new Database($this->db_name);
+		$this->db->query("CREATE TABLE `".$this->list_users_table."` (
+			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			`login` VARCHAR(50) UNIQUE, 
+			`balance` VARCHAR(50), 
+			`symbol` VARCHAR(50)
+			)
+		");
+		$this->db->query("
 			CREATE TABLE IF NOT EXISTS ".$this->list_sips_table." (
-			id INTEGER PRIMARY KEY,
-			sip_login VARCHAR UNIQUE,
-			login_id INTEGER REFERENCES ".$this->list_users_table." (id) 
-		);");
-		$this->db->exec("
+			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			`sip_login` VARCHAR(50) UNIQUE,
+			`login_id` INTEGER REFERENCES ".$this->list_users_table." (id)
+			);
+		");
+		$this->db->query("
 			CREATE TABLE IF NOT EXISTS ".$this->calls_details_table." (
-			id INTEGER PRIMARY KEY,
-			sip_login_id INTEGER REFERENCES ".$this->list_sips_table." (id),
-			time DATETIME,
-			numfrom VARCHAR,
-			numto VARCHAR,
-			direction VARCHAR,
-			duration VARCHAR,
-			zone VARCHAR,
-			amount VARCHAR,
-			currency VARCHAR,
-			callid VARCHAR UNIQUE,
-			disposition VARCHAR
-		);");		
+			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			`sip_login_id` INTEGER REFERENCES ".$this->list_sips_table." (id),
+			`time` DATETIME,
+			`numfrom` VARCHAR(50),
+			`numto` VARCHAR(50),
+			`direction` VARCHAR(50),
+			`duration` VARCHAR(50),
+			`zone` VARCHAR(50),
+			`amount` VARCHAR(50),
+			`currency` VARCHAR(50),
+			`callid` VARCHAR(50) UNIQUE,
+			`disposition` VARCHAR(50)
+			);
+		");
 	}
 	
 	private function primatelApi($svc = "login", $query_params = array()){
@@ -100,7 +92,7 @@ class Telephony{
 		$data = $this->listUsers();		
 		
 		foreach($data->data->data as $data_arr){
-			$this->db->exec("REPLACE INTO ".$this->list_users_table." (".implode(",", $data->data->names).") VALUES ('".implode("','", $data_arr)."')");	
+			$this->db->query("REPLACE INTO ".$this->list_users_table." (".implode(",", $data->data->names).") VALUES ('".implode("','", $data_arr)."')");	
 		}
 	}
 	
@@ -108,7 +100,7 @@ class Telephony{
 		$result = $this->db->query("SELECT * FROM ".$this->list_users_table);
 		if($returnArray){
 			$result_array = array();
-			while($res = $result->fetchArray()){
+			while($res = $result->fetch_assoc()){
 				array_push($result_array, $res);
 			}			
 			return $result_array;
@@ -123,7 +115,7 @@ class Telephony{
 		$to = date($this->datetime_format);
 		
 		$this->login();
-		while($res = $result->fetchArray()){
+		while($res = $result->fetch_assoc()){
 			$params = array(
 				"user_login" => $res["login"],
 				"from" => $from,
@@ -132,7 +124,7 @@ class Telephony{
 			$data = $this->primatelApi("getCallsTotals", $params);
 			$key = array_search("login", $data->data->names);		
 			foreach($data->data->data as $data_arr){
-				$this->db->exec("REPLACE INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
+				$this->db->query("REPLACE INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
 			}
 		}
 	}
@@ -142,13 +134,14 @@ class Telephony{
 		$to = $to ? $to : date($this->datetime_format);
 		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
 		$query = "
-			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM list_users lu
-			JOIN list_sips ls ON ls.login_id = lu.id
-			JOIN calls_details cd ON cd.sip_login_id = ls.id
-			WHERE date BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to))."'".$and."
+			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM ".$this->list_users_table." lu
+			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id
+			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id
+			WHERE cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
 			GROUP BY DATE(cd.time), lu.login";
 			
 		$result = $this->db->query($query);
+
 		$result_array = array(
 			"dates" => array(),
 			"data" => array()
@@ -160,7 +153,7 @@ class Telephony{
 			array_push($template_array, 0);
 		}
 		
-		while($res = $result->fetchArray()){
+		while($res = $result->fetch_assoc()){
 			$login_array = array(
 				"login" => $res["login"],
 				"data" => array()
@@ -179,7 +172,7 @@ class Telephony{
 		$from = date($this->datetime_format, strtotime('-7 days'));
 		$to = date($this->datetime_format);
 		$this->login();
-		while($sip = $result->fetchArray()){
+		while($sip = $result->fetch_assoc()){
 			$total = 0;
 			$page_number = 1;
 			$page_size = 100;
@@ -206,7 +199,7 @@ class Telephony{
 				foreach($data->data->data as $data_arr){
 					$time_key = array_search("time", $data->data->names);
 					//$time = array_shift(array_slice($data_arr, $time_key, 1));
-					$this->db->exec("REPLACE INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
+					$this->db->query("REPLACE INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
 				}
 			} while($total >= $page_size);
 		}
@@ -216,17 +209,18 @@ class Telephony{
 		$query = "SELECT cd.* FROM list_users lu JOIN list_sips ls ON ls.login_id = lu.id JOIN calls_details cd ON cd.sip_login_id = ls.id WHERE DATE(cd.time) = '".date($this->date_format,strtotime($date))."' AND lu.id = ".$login_id;
 		$result = $this->db->query($query);
 		$result_array = array();
-		while($res = $result->fetchArray()){
+		while($res = $result->fetch_assoc()){
 			array_push($result_array, $res);
 		}			
 		return $result_array;
 	}
 	
 	public function update(){
-		echo "update";		
-		//$this->updateListUsers();
-		//$this->updateSips();
-		//$this->updateCallsDetails();
+		echo "update start";		
+		$this->updateListUsers();
+		$this->updateSips();
+		$this->updateCallsDetails();
+		echo "update finished";	
 		//echo "<pre>";
 		//echo json_encode($this->getListUsers());
 	}
