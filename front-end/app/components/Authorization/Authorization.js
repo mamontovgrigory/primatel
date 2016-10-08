@@ -40,7 +40,7 @@ export default class Authorization extends React.Component{
                 <div className="col s6 offset-s3">
                     <h4 className="center-align">Авторизация</h4>
                     <div className="row">
-                        <form className="col s12">
+                        <form className="col s12" onSubmit={this.authorization.bind(this)}>
                             <div className="row">
                                 <div className="input-field col s12">
                                     <i className="material-icons prefix">account_circle</i>

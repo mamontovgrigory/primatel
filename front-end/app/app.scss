@@ -28,6 +28,16 @@ table{
   }
 }
 
+.card-wrapper{
+  width: 50%;
+  float: left;
+  padding-right: 20px;
+  .card{
+    .card-image{
+      height: 200px;
+    }
+  }
+}
 
 .divider{
   clear: both;
