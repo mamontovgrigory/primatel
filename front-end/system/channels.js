@@ -1,9 +1,44 @@
-import BreadcrumbsStore from '../modules/Breadcrumbs/Breadcrumbs';
+import Authorization from '../modules/Authorization/Authorization';
+import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
 
 export default {
+
+    /*#region breadcrumbs*/
+
+    'AUTHORIZATION_LOGIN': {
+        'channel': 'AUTHORIZATION_LOGIN',
+        'method': Authorization.login,
+        'title': 'login',
+        'type': 'object',
+        'properties': {
+            'login': {
+                'type': 'string'
+            },
+            'password': {
+                'type': 'string'
+            }
+        },
+        'response': {
+            'type': 'object',
+            'properties': {
+                'success': {
+                    'type': 'boolean'
+                },
+                'message': {
+                    'type': 'string'
+                }
+            }
+        }
+    },
+
+    /*endregion*/
+
+
+    /*#region breadcrumbs*/
+
     'BREADCRUMBS_GET_LIST': {
         'channel': 'BREADCRUMBS_GET_LIST',
-        'method': BreadcrumbsStore.getList,
+        'method': Breadcrumbs.getList,
         'title': 'Get breadcrumbs list',
         'type': 'function',
         'response': {
@@ -11,6 +46,11 @@ export default {
             'items': 'string'
         }
     },
+
+    /*endregion*/
+
+
+    /*#region telephony*/
 
     'TELEPHONY_GET_LIST_USERS': {
         'channel': 'TELEPHONY_GET_LIST_USERS',
@@ -40,4 +80,6 @@ export default {
         'title': 'Get calls details',
         'type': 'function',
     }
+
+    /*endregion*/
 };

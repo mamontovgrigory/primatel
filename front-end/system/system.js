@@ -1,4 +1,4 @@
-import Authorization from '../app/components/Authorization/Authorization';
+import Main from '../app/components/Main/Main';
 import Telephony from '../app/components/Telephony/Telephony';
 import Users from '../app/components/Users/Users';
 
@@ -6,7 +6,7 @@ module.exports = {
     routes: [
         {
             path: 'index',
-            component: Authorization
+            component: Main
         },
         {
             path: 'telephony',
@@ -18,20 +18,26 @@ module.exports = {
         }
     ],
     breadcrumbs: {
-        crm: {
+        index: {
             id: 1,
             name: 'CRM',
-            href: '/',
+            href: '/'
         },
         telephony: {
             id: 2,
             name: 'Телефония',
-            href: '/telephony'
+            href: '/telephony',
+            parents: [
+                'index'
+            ]
         },
         users: {
             id: 3,
             name: 'Пользователи',
-            href: '/users'
+            href: '/users',
+            parents: [
+                'index'
+            ]
         }
     },
     libs: {

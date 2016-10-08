@@ -13,7 +13,7 @@ export default class Navbar extends React.Component{
                     <a href="#" className="brand-logo right">Primatel 2.0</a>
                     <ul className="left">
                         <li>
-                            <a data-activates="slide-out" className="side-nav-collapse">
+                            <a data-activates="slide-out" className="side-nav-collapse" hidden={!system.user}>
                                 <i className="material-icons">menu</i>
                             </a>
                         </li>

@@ -1,7 +1,4 @@
-class Breadcrumbs extends React.Component{
-    constructor(){
-        super();
-    }
+class Breadcrumbs{
     getList(properties, callback){
         var breadcrumb = properties && properties.breadcrumb? properties.breadcrumb : null;
         var matrix = {};
@@ -15,7 +12,8 @@ class Breadcrumbs extends React.Component{
         if(breadcrumb && matrix[breadcrumb]){
             if(matrix[breadcrumb].parents){
                 for(var i = 0; i < matrix[breadcrumb].parents.length; i++){
-                    breadcrumbs.push(matrix[matrix[breadcrumb].parents[i]]);
+                    var parent = matrix[matrix[breadcrumb].parents[i]];
+                    if(parent) breadcrumbs.push(parent);
                 }
             }
             breadcrumbs.push(matrix[breadcrumb]);

@@ -27,7 +27,7 @@ export default class Telephony extends React.Component{
     }
     componentDidMount(){
         var self = this;
-        //Materialize.updateTextFields();
+
         $('#date-from').pickadate({
             format: constants.dateFormat,
             onSet: function(result) {
@@ -46,6 +46,7 @@ export default class Telephony extends React.Component{
                 });
             }
         });
+        Materialize.updateTextFields();
     }
     slideClickHandler(){
         $('#loginList-block').slideToggle();

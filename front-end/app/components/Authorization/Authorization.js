@@ -15,26 +15,23 @@ export default class Authorization extends React.Component{
     authorization(){
         if(this.state && this.state.login && this.state.password){
             var self = this;
-            /*AuthorizationStore.login({
-                login: this.state.login,
-                password: this.state.password,
-                callback: function(success){
-                    if(success){
-                        auth.setState({ notification: "" });
-                        window.location = '#/sections';
-                    } else {
-                        auth.setState({ notification: "Incorrect login or password" });
-                    }
+            mediator.publish(channels.AUTHORIZATION_LOGIN, {
+                login: self.state.login,
+                password: self.state.password
+            }, function(response){
+                if(response.success){
+                    window.location = '/#';
+                }else{
+                    self.setState({ notification: response.message });
                 }
-            });*/
-            window.location = '#/telephony';
+            });
         } else {
             if(this.state.login){
                 $("[name='password']").focus();
             }else{
                 $("[name='login']").focus();
             }
-            this.setState({ notification: "Введите логин и пароль" });
+            this.setState({ notification: 'Введите логин и пароль' });
         }
     }
     render(){
