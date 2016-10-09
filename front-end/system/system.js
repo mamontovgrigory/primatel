@@ -3,6 +3,7 @@ import Telephony from '../app/components/Telephony/Telephony';
 import Users from '../app/components/Users/Users';
 
 module.exports = {
+    user: true, //TODO: DELETE!
     routes: [
         {
             path: 'index',
@@ -49,6 +50,9 @@ module.exports = {
         }
     },
     modules: {
+        'Authorization': {
+            require: true
+        },
         'Breadcrumbs': {
             require: true
         },
@@ -56,6 +60,10 @@ module.exports = {
             require: true
         },
         'Telephony': {
+            require: true
+        }
+        ,
+        'Users': {
             require: true
         }
     },

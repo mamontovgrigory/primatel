@@ -1,6 +1,18 @@
 import Authorization from '../modules/Authorization/Authorization';
 import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
 
+var userSchema = {
+    'id': {
+        'type': 'string'
+    },
+    'login': {
+        'type': 'string'
+    },
+    'isAdmin': {
+        'type': 'boolean'
+    }
+};
+
 export default {
 
     /*#region breadcrumbs*/
@@ -31,7 +43,7 @@ export default {
         }
     },
 
-    /*endregion*/
+    /*#endregion*/
 
 
     /*#region breadcrumbs*/
@@ -47,7 +59,7 @@ export default {
         }
     },
 
-    /*endregion*/
+    /*#endregion*/
 
 
     /*#region telephony*/
@@ -79,7 +91,48 @@ export default {
         'url': 'http://localhost/primatel/ajax/get_calls_details.php',
         'title': 'Get calls details',
         'type': 'function',
+    },
+
+    /*#endregion*/
+
+
+    /*#region users*/
+
+    USERS_GET_LIST:
+    {
+        'channel': 'USERS_GET_LIST',
+        'title': '',
+        'url': 'http://localhost/primatel/ajax/get_users.php',
+        'response': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': userSchema
+            }
+        }
+    },
+
+    USERS_SAVE:
+    {
+        'channel': 'USERS_SAVE',
+        'title': '',
+        'url': 'http://localhost/primatel/ajax/user_save.php',
+        'type': 'object',
+        'properties': userSchema
+    },
+
+    USERS_DELETE:
+    {
+        'channel': 'USERS_DELETE',
+        'title': '',
+        'url': 'http://localhost/primatel/ajax/user_delete.php',
+        'type': 'object',
+        'properties': {
+            'id': {
+                'type': 'string'
+            }
+        }
     }
 
-    /*endregion*/
+    /*#endregion*/
 };

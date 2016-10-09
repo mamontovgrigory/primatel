@@ -11,13 +11,14 @@ window.mediator = require('./system/mediator');
 if(channels && mediator){
     _.forEach(channels, function(properties) {
         mediator.subscribe(properties, function(data, callback){
-            if(properties.url || properties.remoteUrl){
+            if(properties.url){
                 $.ajax({
                     url: properties.url,
                     data: data,
+                    type: "POST",
                     success: function(response){
                         if(callback && typeof(callback) === 'function'){
-                            callback(response);
+                            callback(response && typeof(response) === "string" ? JSON.parse(response) : response);
                         }
                     }
                 });

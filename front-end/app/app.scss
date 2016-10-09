@@ -1,5 +1,13 @@
 @import "constants/constants";
 
+.text-white{
+  color: $color-white;
+}
+
+.background-system{
+  background: $system-panel-color;
+}
+
 body{
   margin: 0;
   padding: 0;

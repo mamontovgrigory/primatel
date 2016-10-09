@@ -6,19 +6,20 @@ ReactDOM.render(
     <Router history={hashHistory}>
         <Route path='/' component={Layout}>
             {
-                system.routes.map((route) => {
+                system.routes.map((route, index) => {
                     return (
                         route.path === 'index' ?
-                            <IndexRoute component={route.component} breadcrumb={route.path}/>
+                            <IndexRoute
+                                component={route.component}
+                                breadcrumb={route.path}/>
                             :
-                            <Route path={route.path} component={route.component} breadcrumb={route.path} />
-
+                            <Route key={index}
+                                   path={route.path}
+                                   component={route.component}
+                                   breadcrumb={route.path} />
                     )
                 })
             }
-            <Route path="*" component={_.find(system.routes, function(r){ //TODO: create 404
-                return r.path === 'index';
-            }).component}/>
         </Route>
     </Router>,
     document.getElementById('app')

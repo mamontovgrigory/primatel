@@ -7,12 +7,14 @@ export default class Main extends React.Component{
         this.state = {
             modules:[
                 {
+                    id: 1,
                     name: 'Пользователи',
                     to: 'users',
                     src: require('./content/users.png'),
                     text: 'Создание, редактирование и удаление пользователей системы'
                 },
                 {
+                    id: 2,
                     name: 'Телефония',
                     to: 'telephony',
                     src: require('./content/telephony.png'),
@@ -28,7 +30,7 @@ export default class Main extends React.Component{
                     this.state.modules.map((el) => {
                         return (
                             el.path !== 'index' ?
-                                <div className="card-wrapper">
+                                <div className="card-wrapper" key={el.id}>
                                     <div className="card sticky-action">
                                         <div className="card-image waves-effect waves-block waves-light">
                                             <img className="activator" src={el.src} />

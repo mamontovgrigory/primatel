@@ -21,7 +21,7 @@ export default class Telephony extends React.Component{
         var self = this;
         mediator.publish(channels.TELEPHONY_GET_LIST_USERS, null, function(result){
             self.setState({
-                loginList: typeof(result) === "string" ? JSON.parse(result) : result
+                loginList: result
             });
         });
     }
@@ -70,7 +70,7 @@ export default class Telephony extends React.Component{
             "to": self.state.to
         }, function(result){
             self.setState({
-                callsTotals: typeof(result) === "string" ? JSON.parse(result) : result
+                callsTotals: result
             });
         });
     }
@@ -84,7 +84,7 @@ export default class Telephony extends React.Component{
             date: date
         }, function(result){
             self.setState({
-                callsDetails: typeof(result) === "string" ? JSON.parse(result) : result
+                callsDetails: result
             });
             var $modal = $('#modal1');
             $modal.find('h4').html(login + ' ' + moment(date).format(system.format.date));

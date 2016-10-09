@@ -11,8 +11,8 @@ class Telephony{
 	private $password = "iVnR6S5j2v6";
 	private $mode = "json";
 	private $sid;
-	private $db_name = "telephony";
 	private $db;
+	private $db_name = "telephony";
 	private $list_users_table = "list_users";
 	//private $calls_totals_table = "calls_totals";
 	private $list_sips_table = "list_sips";
