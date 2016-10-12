@@ -1,4 +1,3 @@
-import Authorization from '../modules/Authorization/Authorization';
 import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
 
 var userSchema = {
@@ -19,7 +18,7 @@ export default {
 
     'AUTHORIZATION_LOGIN': {
         'channel': 'AUTHORIZATION_LOGIN',
-        'method': Authorization.login,
+        'url': 'http://localhost/primatel/ajax/login.php',
         'title': 'login',
         'type': 'object',
         'properties': {
@@ -35,9 +34,6 @@ export default {
             'properties': {
                 'success': {
                     'type': 'boolean'
-                },
-                'message': {
-                    'type': 'string'
                 }
             }
         }

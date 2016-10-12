@@ -1,12 +1,19 @@
-window.system = require('./system/system');
+global.system = require('./system/system');
 
 require('./libs/libs');
 require('./modules/modules');
 
-window.constants = require('./app/constants/constants');
+global.constants = require('./app/constants/constants');
 
-window.channels = require('./system/channels');
-window.mediator = require('./system/mediator');
+global.channels = require('./system/channels');
+global.mediator = require('./system/mediator');
+
+if($.cookie('login') && $.cookie('isAdmin')){
+    system.user = {
+        login: $.cookie('login'),
+        isAdmin: $.cookie('isAdmin') === 'true'
+    };
+}
 
 if(channels && mediator){
     _.forEach(channels, function(properties) {

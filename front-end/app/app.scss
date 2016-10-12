@@ -13,7 +13,14 @@ body{
   padding: 0;
 }
 
-nav, .panel{
+nav{
+  background: $system-panel-color;
+  .brand-logo{
+    position: static!important;
+  }
+}
+
+.panel{
   background: $system-panel-color;
 }
 

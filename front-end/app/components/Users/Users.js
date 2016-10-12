@@ -26,7 +26,7 @@ export default class Users extends React.Component{
         var self = this;
         var userNumber = this.state.users.length + 1;
         mediator.publish(channels.USERS_SAVE, {
-            login: 'Пользователь ' + userNumber
+            login: 'user_' + userNumber
         }, function(){
             self.usersGetList();
         });

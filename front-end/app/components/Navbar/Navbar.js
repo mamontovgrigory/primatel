@@ -1,4 +1,7 @@
 export default class Navbar extends React.Component{
+    constructor(){
+        super();
+    }
     componentDidMount(){
         $(".side-nav-collapse").sideNav();
 
@@ -6,11 +9,36 @@ export default class Navbar extends React.Component{
             $('.side-nav').sideNav('hide');
         });
     }
+    logoutClickHandler(){
+        /*system.user = null;
+        $.removeCookie('login');
+        $.removeCookie('isAdmin');
+        window.location = '#/';*/
+    }
     render(){
+        var user = system.user;
         return (
             <nav>
                 <div className="nav-wrapper container">
                     <a href="#" className="brand-logo right">Primatel 2.0</a>
+                    <ul id="dropdown-user" className="dropdown-content">
+                        <li><a onClick={this.logoutClickHandler.bind(this)}>Выйти</a></li>
+                    </ul>
+                    {
+                        user ?
+                            <ul className="right">
+                                <li>
+                                    <a className="dropdown-button" data-activates="dropdown-user">
+                                        <div className="chip">
+                                            {user.login}
+                                        </div>
+                                        <i className="material-icons right">arrow_drop_down</i>
+                                    </a>
+                                </li>
+                            </ul>
+                            :
+                            null
+                    }
                     <ul className="left">
                         <li>
                             <a data-activates="slide-out" className="side-nav-collapse" hidden={!system.user}>

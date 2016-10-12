@@ -3,7 +3,6 @@ import Telephony from '../app/components/Telephony/Telephony';
 import Users from '../app/components/Users/Users';
 
 module.exports = {
-    user: true, //TODO: DELETE!
     routes: [
         {
             path: 'index',
