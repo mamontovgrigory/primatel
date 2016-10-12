@@ -10,10 +10,10 @@ export default class Navbar extends React.Component{
         });
     }
     logoutClickHandler(){
-        /*system.user = null;
+        system.user = null;
         $.removeCookie('login');
         $.removeCookie('isAdmin');
-        window.location = '#/';*/
+        window.location = '#/';
     }
     render(){
         var user = system.user;

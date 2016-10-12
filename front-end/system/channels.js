@@ -18,7 +18,7 @@ export default {
 
     'AUTHORIZATION_LOGIN': {
         'channel': 'AUTHORIZATION_LOGIN',
-        'url': 'http://localhost/primatel/ajax/login.php',
+        'url': '/primatel/ajax/login.php',
         'title': 'login',
         'type': 'object',
         'properties': {
@@ -62,7 +62,7 @@ export default {
 
     'TELEPHONY_GET_LIST_USERS': {
         'channel': 'TELEPHONY_GET_LIST_USERS',
-        'url': 'http://localhost/primatel/ajax/get_list_users.php',
+        'url': '/primatel/ajax/get_list_users.php',
         'title': 'Get clients list',
         'type': 'function',
         'response': {
@@ -73,7 +73,7 @@ export default {
 
     'TELEPHONY_GET_CALLS_TOTALS': {
         'channel': 'TELEPHONY_GET_CALLS_TOTALS',
-        'url': 'http://localhost/primatel/ajax/get_calls_totals.php',
+        'url': '/primatel/ajax/get_calls_totals.php',
         'title': 'Get calls totals',
         'type': 'function',
         'response': {
@@ -84,7 +84,7 @@ export default {
 
     'TELEPHONY_GET_CALLS_DETAILS': {
         'channel': 'TELEPHONY_GET_CALLS_DETAILS',
-        'url': 'http://localhost/primatel/ajax/get_calls_details.php',
+        'url': '/primatel/ajax/get_calls_details.php',
         'title': 'Get calls details',
         'type': 'function',
     },
@@ -98,7 +98,7 @@ export default {
     {
         'channel': 'USERS_GET_LIST',
         'title': '',
-        'url': 'http://localhost/primatel/ajax/get_users.php',
+        'url': '/primatel/ajax/get_users.php',
         'response': {
             'type': 'array',
             'items': {
@@ -112,7 +112,7 @@ export default {
     {
         'channel': 'USERS_SAVE',
         'title': '',
-        'url': 'http://localhost/primatel/ajax/user_save.php',
+        'url': '/primatel/ajax/user_save.php',
         'type': 'object',
         'properties': userSchema
     },
@@ -121,7 +121,7 @@ export default {
     {
         'channel': 'USERS_DELETE',
         'title': '',
-        'url': 'http://localhost/primatel/ajax/user_delete.php',
+        'url': '/primatel/ajax/user_delete.php',
         'type': 'object',
         'properties': {
             'id': {

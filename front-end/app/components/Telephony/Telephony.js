@@ -86,6 +86,8 @@ export default class Telephony extends React.Component{
         var loginObj = _.find(self.state.loginList, function(c){
             return c.login === login;
         });
+
+        self.setPage(1);
         mediator.publish(channels.TELEPHONY_GET_CALLS_DETAILS, {
             loginId: loginObj.id,
             date: date
@@ -117,18 +119,22 @@ export default class Telephony extends React.Component{
         }
     }
     timeChangeHandler(e){
+        this.setPage(1);
         this.setCallDetailsFilter('time', e.target.value);
     }
     numfromChangeHandler(e){
+        this.setPage(1);
         this.setCallDetailsFilter('numfrom', e.target.value);
     }
     numtoChangeHandler(e){
+        this.setPage(1);
         this.setCallDetailsFilter('numto', e.target.value);
     }
     durationChangeHandler(e){
+        this.setPage(1);
         this.setCallDetailsFilter('duration', e.target.value);
     }
-    pageClickHandler(page){
+    setPage(page){
         this.setState({
             page: page
         });
@@ -292,7 +298,7 @@ export default class Telephony extends React.Component{
                                 this.state.page !== 1 ?
                                     <li className="disabled">
                                         <a className="waves-effect"
-                                           onClick={() => self.pageClickHandler(this.state.page - 1)}>
+                                           onClick={() => self.setPage(this.state.page - 1)}>
                                             <i className="material-icons">chevron_left</i>
                                         </a>
                                     </li>
@@ -309,7 +315,7 @@ export default class Telephony extends React.Component{
                                                 el === null ?
                                                     <a>...</a>
                                                     :
-                                                    <a onClick={() => self.pageClickHandler(el)}>{el}</a>
+                                                    <a onClick={() => self.setPage(el)}>{el}</a>
                                             }
                                         </li>
                                     )
@@ -319,7 +325,7 @@ export default class Telephony extends React.Component{
                                 pagesCount !== this.state.page ?
                                     <li className="waves-effect">
                                         <a className="waves-effect"
-                                           onClick={() => self.pageClickHandler(this.state.page + 1)}>
+                                           onClick={() => self.setPage(this.state.page + 1)}>
                                             <i className="material-icons">chevron_right</i>
                                         </a>
                                     </li>
