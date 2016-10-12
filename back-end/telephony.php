@@ -142,7 +142,8 @@ class Telephony{
 			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM ".$this->list_users_table." lu
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id
-			WHERE cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
+			WHERE ls.sip_login LIKE '%did%' 
+			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
 			GROUP BY DATE(cd.time), lu.login
 			ORDER BY cd.time";		
 		$result = $this->db->query($query);
@@ -217,7 +218,8 @@ class Telephony{
 			SELECT cd.* FROM ".$this->list_users_table." lu 
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
-			WHERE DATE(cd.time) = '".date($this->date_format,strtotime($date))."' 
+			WHERE ls.sip_login LIKE '%did%' 
+			AND DATE(cd.time) = '".date($this->date_format,strtotime($date))."' 
 			AND lu.id = ".$login_id;
 		$result = $this->db->query($query);
 		$result_array = array();

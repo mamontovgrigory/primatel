@@ -18,7 +18,17 @@ class Users{
 	}
 	
 	public function getPasswordHash($password){
-		return password_hash($password, PASSWORD_BCRYPT);
+		return md5($password);
+	}
+	
+	public function login($login, $password){
+		$result = $this->db->query("SELECT id, login, is_admin as isAdmin FROM ".$this->users_table.
+		" WHERE login='".$login."' AND password='".$this->getPasswordHash($password)."'");
+		$result = $result->fetch_assoc();
+		if($result) {			
+			$result["isAdmin"] = $result["isAdmin"] == 1 ? true : false;
+		}
+		return $result;
 	}
 	
 	public function getList($returnArray = true){

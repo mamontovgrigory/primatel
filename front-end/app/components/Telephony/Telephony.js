@@ -14,7 +14,10 @@ export default class Telephony extends React.Component{
                 dates: [],
                 data: []
             },
-            callsDetails: []
+            callsDetails: [],
+            callsDetailsFilter: {},
+            page: 1,
+            rowNum: 10
         };
     }
     componentWillMount(){
@@ -48,6 +51,10 @@ export default class Telephony extends React.Component{
         });
         Materialize.updateTextFields();
     }
+    componentDidUpdate(){
+        var audioInitializedClass = 'audio-initialized';
+        $('audio').not('.'+ audioInitializedClass).addClass(audioInitializedClass).audioPlayer();
+    }
     slideClickHandler(){
         $('#loginList-block').slideToggle();
     }
@@ -57,7 +64,7 @@ export default class Telephony extends React.Component{
         });
         if(index === -1){
             this.state.loginIds.push(loginId);
-        }else{
+        } else {
             this.state.loginIds.splice(index, 1);
         }
     }
@@ -90,7 +97,7 @@ export default class Telephony extends React.Component{
             $modal.find('h4').html(login + ' ' + moment(date).format(system.format.date));
             $modal.openModal({
                 ready: function() {
-                    $('audio').audioPlayer();
+                    //$('audio').audioPlayer();
                 },
                 complete: function() {
                     self.setState({
@@ -100,9 +107,59 @@ export default class Telephony extends React.Component{
             });
         });
     }
+    setCallDetailsFilter(key, value){
+        if(key){
+            var callsDetailsFilter = this.state.callsDetailsFilter;
+            callsDetailsFilter[key] = value;
+            this.setState({
+                callsDetailsFilter: callsDetailsFilter
+            });
+        }
+    }
+    timeChangeHandler(e){
+        this.setCallDetailsFilter('time', e.target.value);
+    }
+    numfromChangeHandler(e){
+        this.setCallDetailsFilter('numfrom', e.target.value);
+    }
+    numtoChangeHandler(e){
+        this.setCallDetailsFilter('numto', e.target.value);
+    }
+    durationChangeHandler(e){
+        this.setCallDetailsFilter('duration', e.target.value);
+    }
+    pageClickHandler(page){
+        this.setState({
+            page: page
+        });
+    }
     render(){
         var self = this;
-        var callsDetails = this.state.callsDetails.splice(0, 20);
+
+        var callsDetails = _.filter(self.state.callsDetails, function(c){
+            var valid = true;
+            _.forEach(self.state.callsDetailsFilter, function(value, key){
+                if(value && c[key].indexOf(value) === -1){
+                    valid = false;
+                }
+            });
+            return valid;
+        });
+
+        var rowTotal = callsDetails.length;
+        var pagesCount = Math.ceil(rowTotal/this.state.rowNum);
+        var pagesArr = [];
+        for(var i = 1; i <= pagesCount; i++){
+            if(i === 1 || (i >= this.state.page - 2 && i <= this.state.page + 2) || i === pagesCount){
+                pagesArr.push(i);
+            }else if (pagesArr[pagesArr.length - 1] !== null){
+                pagesArr.push(null);
+            }
+        }
+
+        var pageIndex = (this.state.page - 1) * this.state.rowNum;
+        var callsDetailsSlice = callsDetails.slice(pageIndex, pageIndex + this.state.rowNum);
+
         return (
             <div className="section" id="telephony">
                 <div className="row">
@@ -116,12 +173,12 @@ export default class Telephony extends React.Component{
                                defaultValue={this.state.to} />
                         <label htmlFor="date-to">Период по</label>
                     </div>
-                    <div className="input-field col s3">
+                    <div className="input-field col s3 hide">
                         <input type="number" id="duration" />
                         <label htmlFor="duration">Длительность, сек</label>
                     </div>
                     <div className="col s3 note">
-                        Обновлено 13:08:59 13:08:2016
+                        Обновлено 13:08:59 13:10:2016
                     </div>
                 </div>
                 <div className="row" id="loginList-block">
@@ -150,9 +207,9 @@ export default class Telephony extends React.Component{
                             <tr>
                                 <th>Клиенты</th>
                                 {
-                                    this.state.callsTotals.dates.map((el) => {
+                                    this.state.callsTotals.dates.map((el, index) => {
                                         return (
-                                            <th>{moment(el).format(system.format.date)}</th>
+                                            <th key={index}>{moment(el).format(system.format.date)}</th>
                                         )
                                     })
                                 }
@@ -189,8 +246,27 @@ export default class Telephony extends React.Component{
                                     <td>Длительность</td>
                                     <td>Запись</td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" id="datetime" className="m-b-0"
+                                               onChange={this.timeChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="numfrom" className="m-b-0"
+                                               onChange={this.numfromChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="numto" className="m-b-0"
+                                               onChange={this.numtoChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="duration" className="m-b-0"
+                                               onChange={this.durationChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td></td>
+                                </tr>
                                 {
-                                    callsDetails.map((el) => {
+                                    callsDetailsSlice.map((el) => {
                                         return (
                                             <tr>
                                                 <td>{moment(el.time).format(system.format.time)}</td>
@@ -212,13 +288,43 @@ export default class Telephony extends React.Component{
                             </tbody>
                         </table>
                         <ul className="pagination text-center">
-                            <li className="disabled"><a href="#!"><i className="material-icons">chevron_left</i></a></li>
-                            <li className="active"><a href="#!">1</a></li>
-                            <li className="waves-effect"><a href="#!">2</a></li>
-                            <li className="waves-effect"><a href="#!">3</a></li>
-                            <li className="waves-effect"><a href="#!">4</a></li>
-                            <li className="waves-effect"><a href="#!">5</a></li>
-                            <li className="waves-effect"><a href="#!"><i className="material-icons">chevron_right</i></a></li>
+                            {
+                                this.state.page !== 1 ?
+                                    <li className="disabled">
+                                        <a className="waves-effect"
+                                           onClick={() => self.pageClickHandler(this.state.page - 1)}>
+                                            <i className="material-icons">chevron_left</i>
+                                        </a>
+                                    </li>
+                                    : null
+                            }
+                            {
+                                pagesArr.map((el) => {
+                                    var className = el === null ? '' : 'waves-effect';
+                                    if(el === this.state.page)
+                                        className += ' active';
+                                    return (
+                                        <li className={className}>
+                                            {
+                                                el === null ?
+                                                    <a>...</a>
+                                                    :
+                                                    <a onClick={() => self.pageClickHandler(el)}>{el}</a>
+                                            }
+                                        </li>
+                                    )
+                                })
+                            }
+                            {
+                                pagesCount !== this.state.page ?
+                                    <li className="waves-effect">
+                                        <a className="waves-effect"
+                                           onClick={() => self.pageClickHandler(this.state.page + 1)}>
+                                            <i className="material-icons">chevron_right</i>
+                                        </a>
+                                    </li>
+                                    : null
+                            }
                         </ul>
                     </div>
                     <div className="modal-footer">
