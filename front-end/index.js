@@ -19,9 +19,8 @@ if(channels && mediator){
     _.forEach(channels, function(properties) {
         mediator.subscribe(properties, function(data, callback){
             if(properties.url){
-                var url = NODE_ENV.trim() === 'development' ? 'http://localhost' + properties.url : properties.url;
                 $.ajax({
-                    url: url,
+                    url: system.serverUrl + properties.url,
                     data: data,
                     type: "POST",
                     success: function(response){

@@ -155,11 +155,13 @@ export default class Telephony extends React.Component{
         var rowTotal = callsDetails.length;
         var pagesCount = Math.ceil(rowTotal/this.state.rowNum);
         var pagesArr = [];
-        for(var i = 1; i <= pagesCount; i++){
-            if(i === 1 || (i >= this.state.page - 2 && i <= this.state.page + 2) || i === pagesCount){
-                pagesArr.push(i);
-            }else if (pagesArr[pagesArr.length - 1] !== null){
-                pagesArr.push(null);
+        if(pagesCount > 1){
+            for(var i = 1; i <= pagesCount; i++){
+                if(i === 1 || (i >= this.state.page - 2 && i <= this.state.page + 2) || i === pagesCount){
+                    pagesArr.push(i);
+                }else if (pagesArr[pagesArr.length - 1] !== null){
+                    pagesArr.push(null);
+                }
             }
         }
 
@@ -282,7 +284,7 @@ export default class Telephony extends React.Component{
                                                 <td style={{'minWidth': '300px'}}>
                                                     {
                                                         el.duration > 0 ?
-                                                            <audio src={'http://localhost/primatel/ajax/records/' + el.callid + '.mp3'} />
+                                                            <audio src={system.serverUrl + '/ajax/records/' + el.callid + '.mp3'} />
                                                         :
                                                             <span>Нет записи</span>
                                                     }
