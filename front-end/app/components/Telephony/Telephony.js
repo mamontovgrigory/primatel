@@ -19,7 +19,6 @@ export default class Telephony extends React.Component{
             page: 1,
             rowNum: 10
         };
-        console.log(this.state);
     }
     componentWillMount(){
         var self = this;
@@ -303,9 +302,9 @@ export default class Telephony extends React.Component{
                                     <td></td>
                                 </tr>
                                 {
-                                    callsDetailsSlice.map((el) => {
+                                    callsDetailsSlice.map((el, index) => {
                                         return (
-                                            <tr>
+                                            <tr key={index}>
                                                 <td>{moment(el.time).format(system.format.time)}</td>
                                                 <td>{el.numfrom}</td>
                                                 <td>{el.numto}</td>
