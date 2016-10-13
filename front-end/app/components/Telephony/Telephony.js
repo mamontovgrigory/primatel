@@ -51,29 +51,8 @@ export default class Telephony extends React.Component{
         });
         if(Materialize.updateTextFields && typeof(Materialize.updateTextFields) === 'function') Materialize.updateTextFields();
     }
-    componentWillUpdate(){
-        //console.log($('.audioplayer'));
-        /*if(!$('.audioplayer').length){
-            console.log($('.audioplayer'));
-            $('audio').audioPlayer();
-        }*/
-        //$('.audioplayer').remove();
-        //$('.audioplayer').remove();
-    }
     componentDidUpdate(){
         $('audio').audioPlayer();
-
-        var audioInitializedClass = 'audio-initialized';
-
-        //console.log($('audio').not('.'+ audioInitializedClass).length, $('audio').not('.'+ audioInitializedClass));
-        //$('audio').not('.'+ audioInitializedClass).addClass(audioInitializedClass).audioPlayer();
-        /*$.each($('audio'), function(i, audio){
-           //console.log($(audio));
-            if(!$(audio).hasClass(audioInitializedClass)){
-                console.log($(audio));
-                $(audio).addClass(audioInitializedClass).audioPlayer();
-            }
-        });*/
     }
     slideClickHandler(){
         $('#loginList-block').slideToggle();
@@ -273,8 +252,9 @@ export default class Telephony extends React.Component{
                 <div id="modal1" className="modal modal-fixed-footer">
                     <div className="modal-content">
                         <h4></h4>
-                        <table className="bordered">
-                            <tbody>
+                        <div>
+                            <table className="bordered">
+                                <tbody>
                                 <tr>
                                     <td>Дата и время</td>
                                     <td>Исходящий</td>
@@ -282,25 +262,29 @@ export default class Telephony extends React.Component{
                                     <td>Длительность</td>
                                     <td>Запись</td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text" id="datetime" className="m-b-0"
-                                               onChange={this.timeChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="numfrom" className="m-b-0"
-                                               onChange={this.numfromChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="numto" className="m-b-0"
-                                               onChange={this.numtoChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="duration" className="m-b-0"
-                                               onChange={this.durationChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td></td>
-                                </tr>
+                                {
+                                    false ?
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="datetime" className="m-b-0"
+                                                       onChange={this.timeChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="numfrom" className="m-b-0"
+                                                       onChange={this.numfromChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="numto" className="m-b-0"
+                                                       onChange={this.numtoChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="duration" className="m-b-0"
+                                                       onChange={this.durationChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        : null
+                                }
                                 {
                                     callsDetailsSlice.map((el, index) => {
                                         return (
@@ -313,7 +297,7 @@ export default class Telephony extends React.Component{
                                                     {
                                                         el.duration > 0 ?
                                                             <audio src={system.serverUrl + '/ajax/records/' + el.callid + '.mp3'} />
-                                                        :
+                                                            :
                                                             <span>Нет записи</span>
                                                     }
                                                 </td>
@@ -321,8 +305,9 @@ export default class Telephony extends React.Component{
                                         )
                                     })
                                 }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                         <ul className="pagination text-center">
                             {
                                 this.state.page !== 1 ?
