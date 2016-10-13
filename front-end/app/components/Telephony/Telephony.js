@@ -19,6 +19,7 @@ export default class Telephony extends React.Component{
             page: 1,
             rowNum: 10
         };
+        console.log(this.state);
     }
     componentWillMount(){
         var self = this;
@@ -49,11 +50,31 @@ export default class Telephony extends React.Component{
                 });
             }
         });
-        Materialize.updateTextFields();
+        if(Materialize.updateTextFields && typeof(Materialize.updateTextFields) === 'function') Materialize.updateTextFields();
+    }
+    componentWillUpdate(){
+        //console.log($('.audioplayer'));
+        /*if(!$('.audioplayer').length){
+            console.log($('.audioplayer'));
+            $('audio').audioPlayer();
+        }*/
+        //$('.audioplayer').remove();
+        //$('.audioplayer').remove();
     }
     componentDidUpdate(){
+        $('audio').audioPlayer();
+
         var audioInitializedClass = 'audio-initialized';
-        $('audio').not('.'+ audioInitializedClass).addClass(audioInitializedClass).audioPlayer();
+
+        //console.log($('audio').not('.'+ audioInitializedClass).length, $('audio').not('.'+ audioInitializedClass));
+        //$('audio').not('.'+ audioInitializedClass).addClass(audioInitializedClass).audioPlayer();
+        /*$.each($('audio'), function(i, audio){
+           //console.log($(audio));
+            if(!$(audio).hasClass(audioInitializedClass)){
+                console.log($(audio));
+                $(audio).addClass(audioInitializedClass).audioPlayer();
+            }
+        });*/
     }
     slideClickHandler(){
         $('#loginList-block').slideToggle();
@@ -135,9 +156,15 @@ export default class Telephony extends React.Component{
         this.setCallDetailsFilter('duration', e.target.value);
     }
     setPage(page){
+        var self = this;
         this.setState({
-            page: page
+            page: 0
         });
+        setTimeout(function(){ //TODO: Find another solution
+            self.setState({
+                page: page
+            });
+        }, 1);
     }
     render(){
         var self = this;
@@ -157,7 +184,7 @@ export default class Telephony extends React.Component{
         var pagesArr = [];
         if(pagesCount > 1){
             for(var i = 1; i <= pagesCount; i++){
-                if(i === 1 || (i >= this.state.page - 2 && i <= this.state.page + 2) || i === pagesCount){
+                if(i === 1 || (i >= self.state.page - 2 && i <= self.state.page + 2) || i === pagesCount){
                     pagesArr.push(i);
                 }else if (pagesArr[pagesArr.length - 1] !== null){
                     pagesArr.push(null);
@@ -167,6 +194,7 @@ export default class Telephony extends React.Component{
 
         var pageIndex = (this.state.page - 1) * this.state.rowNum;
         var callsDetailsSlice = callsDetails.slice(pageIndex, pageIndex + this.state.rowNum);
+
 
         return (
             <div className="section" id="telephony">
@@ -231,6 +259,7 @@ export default class Telephony extends React.Component{
                                             {
                                                 loginData.map((el, i) => {
                                                     return <td className="center info-cell"
+                                                               key={i}
                                                                onClick={() => self.infoCellClickHandler(login, self.state.callsTotals.dates[i])}>{el}</td>
                                                 })
                                             }
