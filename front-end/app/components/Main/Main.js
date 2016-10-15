@@ -5,32 +5,25 @@ export default class Main extends React.Component{
         super();
 
         this.state = {
-            modules:[
-                {
-                    id: 1,
-                    name: 'Пользователи',
-                    to: 'users',
-                    src: require('./content/users.png'),
-                    text: 'Создание, редактирование и удаление пользователей системы'
-                },
-                {
-                    id: 2,
-                    name: 'Телефония',
-                    to: 'telephony',
-                    src: require('./content/telephony.png'),
-                    text: 'Просмотр статистики и прослушивание записей телефонии'
-                }
-            ]
+            modules:[]
         }
+    }
+    componentWillMount(){
+        var self = this;
+        mediator.publish(channels.NAVIGATION_GET_ITEMS, null, function(response){
+            self.setState({
+                modules: response
+            });
+        });
     }
     render(){
         return (
             <div className="section">
                 {
-                    this.state.modules.map((el) => {
+                    this.state.modules.map((el, index) => {
                         return (
                             el.path !== 'index' ?
-                                <div className="card-wrapper" key={el.id}>
+                                <div className="card-wrapper" key={index}>
                                     <div className="card sticky-action">
                                         <div className="card-image waves-effect waves-block waves-light">
                                             <img className="activator" src={el.src} />
@@ -49,7 +42,7 @@ export default class Main extends React.Component{
                                                 {el.name}
                                                 <i className="material-icons right">close</i>
                                             </span>
-                                            <p>{el.text}</p>
+                                            <p>{el.description}</p>
                                         </div>
                                     </div>
                                 </div>

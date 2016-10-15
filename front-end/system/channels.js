@@ -1,4 +1,5 @@
 import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
+import Navigation from '../modules/Navigation/Navigation';
 
 var userSchema = {
     'id': {
@@ -34,6 +35,47 @@ export default {
             'properties': {
                 'success': {
                     'type': 'boolean'
+                }
+            }
+        }
+    },
+
+    /*#endregion*/
+
+
+    /*#region breadcrumbs*/
+
+    NAVIGATION_GET_ITEMS:
+    {
+        'channel': 'NAVIGATION_GET_ITEMS',
+        'title': 'Return navigation items (routes)',
+        'method': Navigation.getItems,
+        'response': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'name': {
+                        'type': 'string'
+                    },
+                    'icon': {
+                        'type': 'string'
+                    },
+                    'to': {
+                        'type': 'string'
+                    },
+                    'src': {
+                        'type': 'string'
+                    },
+                    'description': {
+                        'type': 'string'
+                    },
+                    'roles': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string'
+                        }
+                    }
                 }
             }
         }

@@ -1,8 +1,22 @@
+import { Link } from 'react-router';
+
 export default class Navbar extends React.Component{
     constructor(){
         super();
+
+        this.state = {
+            modules:[]
+        }
     }
-    componentDidMount(){
+    componentWillMount() {
+        var self = this;
+        mediator.publish(channels.NAVIGATION_GET_ITEMS, null, function (response) {
+            self.setState({
+                modules: response
+            });
+        });
+    }
+    componentDidMount() {
         $(".side-nav-collapse").sideNav();
 
         $('.side-nav-close').on('click', function(){
@@ -50,12 +64,22 @@ export default class Navbar extends React.Component{
 
                 <ul id="slide-out" className="side-nav">
                     <li>
-                        <a href="#/" className="side-nav-close display-inline-block p-l-0">
+                        <Link to="/" className="side-nav-close display-inline-block p-l-0">
                             <img className="background" src={require('./content/crm.png')} />
-                        </a>
+                        </Link>
                     </li>
-                    <li><a href="#/users" className="waves-effect side-nav-close"><i className="material-icons">recent_actors</i>Пользователи</a></li>
-                    <li><a href="#/telephony" className="waves-effect side-nav-close"><i className="material-icons">phone</i>Телефония</a></li>
+                    {
+                        this.state.modules.map((el, index) => {
+                            return (
+                                <li key={index}>
+                                    <Link to={el.to} className="waves-effect side-nav-close">
+                                        <i className="material-icons">{el.icon}</i>
+                                        {el.name}
+                                    </Link>
+                                </li>
+                            )
+                        })
+                    }
                     <li><div className="divider"></div></li>
                     <li><a className="waves-effect side-nav-close">Закрыть</a></li>
                 </ul>

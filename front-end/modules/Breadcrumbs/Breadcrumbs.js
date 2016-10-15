@@ -22,4 +22,4 @@ class Breadcrumbs{
     }
 }
 
-module.exports = new Breadcrumbs;
+module.exports = new Breadcrumbs();
