@@ -49,11 +49,10 @@ export default class Telephony extends React.Component{
                 });
             }
         });
-        Materialize.updateTextFields();
+        if(Materialize.updateTextFields && typeof(Materialize.updateTextFields) === 'function') Materialize.updateTextFields();
     }
     componentDidUpdate(){
-        var audioInitializedClass = 'audio-initialized';
-        $('audio').not('.'+ audioInitializedClass).addClass(audioInitializedClass).audioPlayer();
+        $('audio').audioPlayer();
     }
     slideClickHandler(){
         $('#loginList-block').slideToggle();
@@ -135,9 +134,15 @@ export default class Telephony extends React.Component{
         this.setCallDetailsFilter('duration', e.target.value);
     }
     setPage(page){
+        var self = this;
         this.setState({
-            page: page
+            page: 0
         });
+        setTimeout(function(){ //TODO: Find another solution
+            self.setState({
+                page: page
+            });
+        }, 1);
     }
     render(){
         var self = this;
@@ -157,7 +162,7 @@ export default class Telephony extends React.Component{
         var pagesArr = [];
         if(pagesCount > 1){
             for(var i = 1; i <= pagesCount; i++){
-                if(i === 1 || (i >= this.state.page - 2 && i <= this.state.page + 2) || i === pagesCount){
+                if(i === 1 || (i >= self.state.page - 2 && i <= self.state.page + 2) || i === pagesCount){
                     pagesArr.push(i);
                 }else if (pagesArr[pagesArr.length - 1] !== null){
                     pagesArr.push(null);
@@ -167,6 +172,7 @@ export default class Telephony extends React.Component{
 
         var pageIndex = (this.state.page - 1) * this.state.rowNum;
         var callsDetailsSlice = callsDetails.slice(pageIndex, pageIndex + this.state.rowNum);
+
 
         return (
             <div className="section" id="telephony">
@@ -231,6 +237,7 @@ export default class Telephony extends React.Component{
                                             {
                                                 loginData.map((el, i) => {
                                                     return <td className="center info-cell"
+                                                               key={i}
                                                                onClick={() => self.infoCellClickHandler(login, self.state.callsTotals.dates[i])}>{el}</td>
                                                 })
                                             }
@@ -245,8 +252,9 @@ export default class Telephony extends React.Component{
                 <div id="modal1" className="modal modal-fixed-footer">
                     <div className="modal-content">
                         <h4></h4>
-                        <table className="bordered">
-                            <tbody>
+                        <div>
+                            <table className="bordered">
+                                <tbody>
                                 <tr>
                                     <td>Дата и время</td>
                                     <td>Исходящий</td>
@@ -254,29 +262,33 @@ export default class Telephony extends React.Component{
                                     <td>Длительность</td>
                                     <td>Запись</td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text" id="datetime" className="m-b-0"
-                                               onChange={this.timeChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="numfrom" className="m-b-0"
-                                               onChange={this.numfromChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="numto" className="m-b-0"
-                                               onChange={this.numtoChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="duration" className="m-b-0"
-                                               onChange={this.durationChangeHandler.bind(this)}/>
-                                    </td>
-                                    <td></td>
-                                </tr>
                                 {
-                                    callsDetailsSlice.map((el) => {
+                                    false ?
+                                        <tr>
+                                            <td>
+                                                <input type="text" id="datetime" className="m-b-0"
+                                                       onChange={this.timeChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="numfrom" className="m-b-0"
+                                                       onChange={this.numfromChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="numto" className="m-b-0"
+                                                       onChange={this.numtoChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="duration" className="m-b-0"
+                                                       onChange={this.durationChangeHandler.bind(this)}/>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        : null
+                                }
+                                {
+                                    callsDetailsSlice.map((el, index) => {
                                         return (
-                                            <tr>
+                                            <tr key={index}>
                                                 <td>{moment(el.time).format(system.format.time)}</td>
                                                 <td>{el.numfrom}</td>
                                                 <td>{el.numto}</td>
@@ -285,7 +297,7 @@ export default class Telephony extends React.Component{
                                                     {
                                                         el.duration > 0 ?
                                                             <audio src={system.serverUrl + '/ajax/records/' + el.callid + '.mp3'} />
-                                                        :
+                                                            :
                                                             <span>Нет записи</span>
                                                     }
                                                 </td>
@@ -293,8 +305,9 @@ export default class Telephony extends React.Component{
                                         )
                                     })
                                 }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                         <ul className="pagination text-center">
                             {
                                 this.state.page !== 1 ?
