@@ -10,6 +10,7 @@ ReactDOM.render(
                     return (
                         route.path === 'index' ?
                             <IndexRoute
+                                key={index}
                                 component={route.component}
                                 breadcrumb={route.path}/>
                             :

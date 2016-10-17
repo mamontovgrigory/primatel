@@ -13,6 +13,7 @@ class Telephony{
 	private $sid;
 	private $db;
 	private $db_name = "telephony";
+	private $accounts_table = "accounts";
 	private $list_users_table = "list_users";
 	//private $calls_totals_table = "calls_totals";
 	private $list_sips_table = "list_sips";
@@ -20,6 +21,13 @@ class Telephony{
 	
 	function __construct() {
 		$this->db = new Database($this->db_name);
+		$this->db->query("CREATE TABLE `".$this->accounts_table."` (
+			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			`name` VARCHAR(50) CHARACTER SET utf8,
+			`account` VARCHAR(50) UNIQUE, 
+			`password` VARCHAR(50)
+			)
+		");
 		$this->db->query("CREATE TABLE `".$this->list_users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
@@ -82,6 +90,28 @@ class Telephony{
 				
 	}
 	
+	public function saveAccount($props){
+		if(array_key_exists("id", $props)){
+			$this->db->query("UPDATE ".$this->accounts_table." SET name='".$props["name"]."',account='".$props["account"]."',password=".$props["password"]." WHERE id = ".$props["id"]);
+		}else{
+			$props["id"] = $this->db->query("INSERT INTO ".$this->accounts_table." (".implode(",", array_keys($props)).") VALUES ('".implode("','", $props)."')");
+		}
+		return $props;
+	}
+	
+	public function getListAccounts($returnArray = true){
+		$result = $this->db->query("SELECT * FROM ".$this->accounts_table);
+		if($returnArray){
+			$result_array = array();
+			while($res = $result->fetch_assoc()){
+				array_push($result_array, $res);
+			}			
+			return $result_array;
+		}else{
+			return $result;
+		}
+	}
+	
 	public function login(){
 		$data = $this->primatelApi();
 		$this->sid = $data->data->sid;	
@@ -89,7 +119,13 @@ class Telephony{
 	
 	public function listUsers(){
 		$this->login();
-		$data = $this->primatelApi("listUsers");
+		$params = array(
+					"page_size" => 100,
+					"page_number" => 1
+				);
+		$data = $this->primatelApi("listUsers", $params);
+		echo "listUsers ";
+		var_dump($data);
 		return $data;
 	}	
 	
@@ -116,17 +152,15 @@ class Telephony{
 	
 	public function updateSips(){
 		$result = $this->getListUsers(false);
-		$from = date($this->datetime_format, strtotime('-7 days'));
-		$to = date($this->datetime_format);
 		
 		$this->login();
 		while($res = $result->fetch_assoc()){
 			$params = array(
 				"user_login" => $res["login"],
-				"from" => $from,
-				"to" => $to
+				"page_size" => 100,
+				"page_number" => 1
 			);
-			$data = $this->primatelApi("getCallsTotals", $params);
+			$data = $this->primatelApi("listSip", $params);
 			$key = array_search("login", $data->data->names);		
 			foreach($data->data->data as $data_arr){
 				$this->db->query("INSERT INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
@@ -186,8 +220,8 @@ class Telephony{
 		$this->login();
 		while($sip = $result->fetch_assoc()){
 			$total = 0;
-			$page_number = 1;
-			$page_size = 100;
+			$page_number = 100;
+			$page_size = 1;
 			do{
 				$params = array(
 					"sip_login" => $sip["sip_login"],
@@ -204,11 +238,13 @@ class Telephony{
 					$total -= $page_size;
 				}
 				$page_number++;
-				foreach($data->data->data as $data_arr){
-					$call_id_key = array_search("callid", $data->data->names);
-					$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
-					$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
-				}
+				if($data->data->data){
+					foreach($data->data->data as $data_arr){
+						$call_id_key = array_search("callid", $data->data->names);
+						$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
+						$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
+					}
+				}				
 			} while($total >= $page_size);
 		}
 	}

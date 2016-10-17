@@ -9,6 +9,14 @@ class Navigation{
                 description: 'Создание, редактирование и удаление пользователей системы',
                 roles: [ 'admin' ]
             },
+            /*{
+                name: 'Личные кабинеты',
+                icon: 'contact_phone',
+                to: 'accounts',
+                src: require('./content/accounts.png'),
+                description: 'Личные кабинеты телефонии',
+                roles: [ 'admin' ]
+            },*/
             {
                 name: 'Телефония',
                 icon: 'phone',

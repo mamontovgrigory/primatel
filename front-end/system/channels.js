@@ -1,6 +1,21 @@
 import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
 import Navigation from '../modules/Navigation/Navigation';
 
+var accountSchema = {
+    'id': {
+        'type': 'string'
+    },
+    'name': {
+        'type': 'string'
+    },
+    'account': {
+        'type': 'boolean'
+    },
+    'password': {
+        'type': 'boolean'
+    }
+};
+
 var userSchema = {
     'id': {
         'type': 'string'
@@ -14,6 +29,47 @@ var userSchema = {
 };
 
 export default {
+
+    /*#region breadcrumbs*/
+
+    'ACCOUNTS_GET_LIST':
+    {
+        'channel': 'ACCOUNTS_GET_LIST',
+        'url': '/ajax/get_accounts.php',
+        'title': 'return accounts list',
+        'response': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': accountSchema
+            }
+        }
+    },
+
+    'ACCOUNTS_SAVE':
+    {
+        'channel': 'ACCOUNTS_SAVE',
+        'url': '/ajax/account_save.php',
+        'title': 'save account',
+        'type': 'object',
+        'properties': accountSchema
+    },
+
+    'ACCOUNTS_DELETE':
+    {
+        'channel': 'ACCOUNTS_DELETE',
+        'title': 'delete account',
+        'url': '/ajax/account_delete.php',
+        'type': 'object',
+        'properties': {
+            'id': {
+                'type': 'string'
+            }
+        }
+    },
+
+    /*#endregion*/
+
 
     /*#region breadcrumbs*/
 

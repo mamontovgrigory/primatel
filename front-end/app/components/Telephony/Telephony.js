@@ -17,7 +17,7 @@ export default class Telephony extends React.Component{
             callsDetails: [],
             callsDetailsFilter: {},
             page: 1,
-            rowNum: 10
+            rowNum: 30
         };
     }
     componentWillMount(){

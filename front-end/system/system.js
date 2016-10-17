@@ -20,12 +20,17 @@ module.exports = {
     ],
     breadcrumbs: {
         index: {
-            id: 1,
             name: 'CRM',
             href: '/'
         },
+        accounts: {
+            name: 'Личные кабинеты',
+            href: '/accounts',
+            parents: [
+                'index'
+            ]
+        },
         telephony: {
-            id: 2,
             name: 'Телефония',
             href: '/telephony',
             parents: [
@@ -33,7 +38,6 @@ module.exports = {
             ]
         },
         users: {
-            id: 3,
             name: 'Пользователи',
             href: '/users',
             parents: [
