@@ -52,7 +52,7 @@ export default class Telephony extends React.Component{
         if(Materialize.updateTextFields && typeof(Materialize.updateTextFields) === 'function') Materialize.updateTextFields();
     }
     componentDidUpdate(){
-        $('audio').audioPlayer();
+        //$('audio').audioPlayer();
     }
     slideClickHandler(){
         $('#loginList-block').slideToggle();
@@ -92,6 +92,7 @@ export default class Telephony extends React.Component{
             date: date
         }, function(result){
             self.setState({
+                chosenLogin: login,
                 callsDetails: result
             });
             var $modal = $('#modal1');
@@ -133,16 +134,25 @@ export default class Telephony extends React.Component{
         this.setPage(1);
         this.setCallDetailsFilter('duration', e.target.value);
     }
+    loadRecordClickHandler(login, callid){
+        mediator.publish(channels.TELEPHONY_GET_CALL_RECORD, {
+            login: login,
+            callid: callid
+        }, function(response){
+            if(response){
+                $('#' + callid).replaceWith($('<audio>', {
+                    'id': callid,
+                    'src': system.serverUrl + response.src
+                }));
+                $('#' + callid).audioPlayer();
+            }
+        });
+    }
     setPage(page){
         var self = this;
-        this.setState({
-            page: 0
+        self.setState({
+            page: page
         });
-        setTimeout(function(){ //TODO: Find another solution
-            self.setState({
-                page: page
-            });
-        }, 1);
     }
     render(){
         var self = this;
@@ -262,29 +272,25 @@ export default class Telephony extends React.Component{
                                     <td>Длительность</td>
                                     <td>Запись</td>
                                 </tr>
-                                {
-                                    false ?
-                                        <tr>
-                                            <td>
-                                                <input type="text" id="datetime" className="m-b-0"
-                                                       onChange={this.timeChangeHandler.bind(this)}/>
-                                            </td>
-                                            <td>
-                                                <input type="text" id="numfrom" className="m-b-0"
-                                                       onChange={this.numfromChangeHandler.bind(this)}/>
-                                            </td>
-                                            <td>
-                                                <input type="text" id="numto" className="m-b-0"
-                                                       onChange={this.numtoChangeHandler.bind(this)}/>
-                                            </td>
-                                            <td>
-                                                <input type="text" id="duration" className="m-b-0"
-                                                       onChange={this.durationChangeHandler.bind(this)}/>
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        : null
-                                }
+                                <tr>
+                                    <td>
+                                        <input type="text" id="datetime" className="m-b-0"
+                                               onChange={this.timeChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="numfrom" className="m-b-0"
+                                               onChange={this.numfromChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="numto" className="m-b-0"
+                                               onChange={this.numtoChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="duration" className="m-b-0"
+                                               onChange={this.durationChangeHandler.bind(this)}/>
+                                    </td>
+                                    <td></td>
+                                </tr>
                                 {
                                     callsDetailsSlice.map((el, index) => {
                                         return (
@@ -296,7 +302,9 @@ export default class Telephony extends React.Component{
                                                 <td style={{'minWidth': '300px'}}>
                                                     {
                                                         el.duration > 0 ?
-                                                            <audio src={system.serverUrl + '/ajax/records/' + el.callid + '.mp3'} />
+                                                            <a className="waves-effect waves-light btn test"
+                                                               id={el.callid}
+                                                               onClick={() => this.loadRecordClickHandler(this.state.chosenLogin, el.callid)}>Загрузить</a>
                                                             :
                                                             <span>Нет записи</span>
                                                     }

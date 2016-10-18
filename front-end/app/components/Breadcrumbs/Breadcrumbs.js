@@ -22,8 +22,8 @@ export default class Breadcrumbs extends React.Component{
                     <div className="nav-wrapper container">
                         <div className="col s12">
                             {
-                                self.breadcrumbs.map((el) => {
-                                    return <Link key={el.id} to={el.href} className="breadcrumb">{el.name}</Link>
+                                self.breadcrumbs.map((el, index) => {
+                                    return <Link key={index} to={el.href} className="breadcrumb">{el.name}</Link>
                                 })
                             }
                         </div>

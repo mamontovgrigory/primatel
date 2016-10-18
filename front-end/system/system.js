@@ -3,7 +3,7 @@ import Telephony from '../app/components/Telephony/Telephony';
 import Users from '../app/components/Users/Users';
 
 module.exports = {
-    serverUrl: NODE_ENV.trim() === 'development' ? 'http://localhost' : window.location.origin,
+    serverUrl: (NODE_ENV.trim() === 'development' ? 'http://localhost' : window.location.origin) + '/ajax',
     routes: [
         {
             path: 'index',

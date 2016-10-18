@@ -215,7 +215,7 @@ class Telephony{
 			SELECT ls.*, lu.login FROM `".$this->list_sips_table."` as ls
 			LEFT JOIN `".$this->list_users_table."`as lu ON lu.id = ls.login_id
 		");
-		$from = date($this->datetime_format, strtotime('-7 days'));
+		$from = date($this->datetime_format, strtotime('-1 days'));
 		$to = date($this->datetime_format);
 		$this->login();
 		while($sip = $result->fetch_assoc()){
@@ -240,8 +240,8 @@ class Telephony{
 				$page_number++;
 				if($data->data->data){
 					foreach($data->data->data as $data_arr){
-						$call_id_key = array_search("callid", $data->data->names);
-						$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
+						//$call_id_key = array_search("callid", $data->data->names);
+						//$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
 						$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
 					}
 				}				
@@ -251,7 +251,7 @@ class Telephony{
 	
 	public function getCallsDetails($login_id, $date){
 		$query = "
-			SELECT cd.* FROM ".$this->list_users_table." lu 
+			SELECT cd.*, lu.login FROM ".$this->list_users_table." lu 
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
 			WHERE ls.sip_login LIKE '%did%' 
@@ -259,10 +259,21 @@ class Telephony{
 			AND lu.id = ".$login_id;
 		$result = $this->db->query($query);
 		$result_array = array();
-		while($res = $result->fetch_assoc()){
+		
+		while($res = $result->fetch_assoc()){			
 			array_push($result_array, $res);
-		}			
+		}
+		
 		return $result_array;
+	}
+	
+	public function getCallRecord($user_login, $call_id){
+		$this->login();		
+		$data = $this->primatelApi("downloadCallRecord", array(
+			"user_login" => $user_login,
+			"call_id" => $call_id
+		), false);
+		return $data;
 	}
 	
 	public function downloadCallRecord($user_login, $call_id){
@@ -272,8 +283,10 @@ class Telephony{
 			"call_id" => $call_id
 		), false);
 		$filename = __DIR__."/records/".$call_id.".mp3";
-		if(!file_exists($filename))
-			file_put_contents($filename, $data);
+		if(!file_exists($filename)){
+			file_put_contents($filename, $data);			
+		}
+		return $data ? "/records/".$call_id.".mp3" : NULL;		
 	}
 	
 	public function update(){

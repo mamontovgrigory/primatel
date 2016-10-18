@@ -21,11 +21,20 @@ if(channels && mediator){
             if(properties.url){
                 $.ajax({
                     url: system.serverUrl + properties.url,
+                    crossDomain: true,
                     data: data,
                     type: "POST",
                     success: function(response){
+                        function isJsonString(str) {
+                            try {
+                                JSON.parse(str);
+                            } catch (e) {
+                                return false;
+                            }
+                            return true;
+                        }
                         if(callback && typeof(callback) === 'function'){
-                            callback(response && typeof(response) === "string" ? JSON.parse(response) : response);
+                            callback(response && typeof(response) === "string" && isJsonString(response) ? JSON.parse(response) : response);
                         }
                     }
                 });

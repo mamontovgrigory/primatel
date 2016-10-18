@@ -35,7 +35,7 @@ export default {
     'ACCOUNTS_GET_LIST':
     {
         'channel': 'ACCOUNTS_GET_LIST',
-        'url': '/ajax/get_accounts.php',
+        'url': '/get_accounts.php',
         'title': 'return accounts list',
         'response': {
             'type': 'array',
@@ -49,7 +49,7 @@ export default {
     'ACCOUNTS_SAVE':
     {
         'channel': 'ACCOUNTS_SAVE',
-        'url': '/ajax/account_save.php',
+        'url': '/account_save.php',
         'title': 'save account',
         'type': 'object',
         'properties': accountSchema
@@ -59,7 +59,7 @@ export default {
     {
         'channel': 'ACCOUNTS_DELETE',
         'title': 'delete account',
-        'url': '/ajax/account_delete.php',
+        'url': '/account_delete.php',
         'type': 'object',
         'properties': {
             'id': {
@@ -75,7 +75,7 @@ export default {
 
     'AUTHORIZATION_LOGIN': {
         'channel': 'AUTHORIZATION_LOGIN',
-        'url': '/ajax/login.php',
+        'url': '/login.php',
         'title': 'login',
         'type': 'object',
         'properties': {
@@ -160,7 +160,7 @@ export default {
 
     'TELEPHONY_GET_LIST_USERS': {
         'channel': 'TELEPHONY_GET_LIST_USERS',
-        'url': '/ajax/get_list_users.php',
+        'url': '/get_list_users.php',
         'title': 'Get clients list',
         'type': 'function',
         'response': {
@@ -171,7 +171,7 @@ export default {
 
     'TELEPHONY_GET_CALLS_TOTALS': {
         'channel': 'TELEPHONY_GET_CALLS_TOTALS',
-        'url': '/ajax/get_calls_totals.php',
+        'url': '/get_calls_totals.php',
         'title': 'Get calls totals',
         'type': 'function',
         'response': {
@@ -182,9 +182,16 @@ export default {
 
     'TELEPHONY_GET_CALLS_DETAILS': {
         'channel': 'TELEPHONY_GET_CALLS_DETAILS',
-        'url': '/ajax/get_calls_details.php',
+        'url': '/get_calls_details.php',
         'title': 'Get calls details',
-        'type': 'function',
+        'type': 'function'
+    },
+
+    'TELEPHONY_GET_CALL_RECORD': {
+        'channel': 'TELEPHONY_GET_CALL_RECORD',
+        'url': '/get_call_record.php',
+        'title': 'Get call records',
+        'type': 'function'
     },
 
     /*#endregion*/
@@ -196,7 +203,7 @@ export default {
     {
         'channel': 'USERS_GET_LIST',
         'title': '',
-        'url': '/ajax/get_users.php',
+        'url': '/get_users.php',
         'response': {
             'type': 'array',
             'items': {
@@ -210,7 +217,7 @@ export default {
     {
         'channel': 'USERS_SAVE',
         'title': '',
-        'url': '/ajax/user_save.php',
+        'url': '/user_save.php',
         'type': 'object',
         'properties': userSchema
     },
@@ -219,7 +226,7 @@ export default {
     {
         'channel': 'USERS_DELETE',
         'title': '',
-        'url': '/ajax/user_delete.php',
+        'url': '/user_delete.php',
         'type': 'object',
         'properties': {
             'id': {
