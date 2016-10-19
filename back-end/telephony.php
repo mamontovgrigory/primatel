@@ -13,21 +13,12 @@ class Telephony{
 	private $sid;
 	private $db;
 	private $db_name = "telephony";
-	private $accounts_table = "accounts";
 	private $list_users_table = "list_users";
-	//private $calls_totals_table = "calls_totals";
 	private $list_sips_table = "list_sips";
 	private $calls_details_table = "calls_details";
 	
 	function __construct() {
 		$this->db = new Database($this->db_name);
-		$this->db->query("CREATE TABLE `".$this->accounts_table."` (
-			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-			`name` VARCHAR(50) CHARACTER SET utf8,
-			`account` VARCHAR(50) UNIQUE, 
-			`password` VARCHAR(50)
-			)
-		");
 		$this->db->query("CREATE TABLE `".$this->list_users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
@@ -124,8 +115,6 @@ class Telephony{
 					"page_number" => 1
 				);
 		$data = $this->primatelApi("listUsers", $params);
-		echo "listUsers ";
-		var_dump($data);
 		return $data;
 	}	
 	
@@ -138,7 +127,7 @@ class Telephony{
 	}
 	
 	public function getListUsers($returnArray = true){
-		$result = $this->db->query("SELECT * FROM ".$this->list_users_table);
+		$result = $this->db->query("SELECT * FROM ".$this->list_users_table." ORDER BY login");
 		if($returnArray){
 			$result_array = array();
 			while($res = $result->fetch_assoc()){
@@ -179,7 +168,7 @@ class Telephony{
 			WHERE ls.sip_login LIKE '%did%' 
 			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
 			GROUP BY DATE(cd.time), lu.login
-			ORDER BY cd.time";		
+			ORDER BY lu.login";		
 		$result = $this->db->query($query);
 
 		$result_array = array(
@@ -215,13 +204,13 @@ class Telephony{
 			SELECT ls.*, lu.login FROM `".$this->list_sips_table."` as ls
 			LEFT JOIN `".$this->list_users_table."`as lu ON lu.id = ls.login_id
 		");
-		$from = date($this->datetime_format, strtotime('-1 days'));
+		$from = date($this->datetime_format, strtotime('-7 days'));
 		$to = date($this->datetime_format);
 		$this->login();
 		while($sip = $result->fetch_assoc()){
 			$total = 0;
-			$page_number = 100;
-			$page_size = 1;
+			$page_number = 1;
+			$page_size = 100;
 			do{
 				$params = array(
 					"sip_login" => $sip["sip_login"],
@@ -231,7 +220,9 @@ class Telephony{
 					"page_size" => $page_size,
 					"page_number" => $page_number
 				);
+				//var_dump($params);
 				$data = $this->primatelApi("getCallsDetails", $params);
+				var_dump($data);
 				if($total == 0){
 					$total = $data->data->total;
 				}else{
@@ -239,11 +230,14 @@ class Telephony{
 				}
 				$page_number++;
 				if($data->data->data){
+					$values = array();
 					foreach($data->data->data as $data_arr){
 						//$call_id_key = array_search("callid", $data->data->names);
 						//$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
-						$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
+						//$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
+						array_push($values, ("(".$sip["id"].",'".implode("','", $data_arr)."')"));
 					}
+					$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES ".implode(",", $values));
 				}				
 			} while($total >= $page_size);
 		}
@@ -256,7 +250,8 @@ class Telephony{
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
 			WHERE ls.sip_login LIKE '%did%' 
 			AND DATE(cd.time) = '".date($this->date_format,strtotime($date))."' 
-			AND lu.id = ".$login_id;
+			AND lu.id = ".$login_id." 
+			ORDER BY cd.time";
 		$result = $this->db->query($query);
 		$result_array = array();
 		
@@ -277,16 +272,16 @@ class Telephony{
 	}
 	
 	public function downloadCallRecord($user_login, $call_id){
-		$this->login();
-		$data = $this->primatelApi("downloadCallRecord", array(
-			"user_login" => $user_login,
-			"call_id" => $call_id
-		), false);
 		$filename = __DIR__."/records/".$call_id.".mp3";
 		if(!file_exists($filename)){
-			file_put_contents($filename, $data);			
+			$this->login();
+			$data = $this->primatelApi("downloadCallRecord", array(
+				"user_login" => $user_login,
+				"call_id" => $call_id
+			), false);
+			file_put_contents($filename, $data);
 		}
-		return $data ? "/records/".$call_id.".mp3" : NULL;		
+		return "/records/".$call_id.".mp3";	
 	}
 	
 	public function update(){

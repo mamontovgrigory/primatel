@@ -17,7 +17,7 @@ export default class Telephony extends React.Component{
             callsDetails: [],
             callsDetailsFilter: {},
             page: 1,
-            rowNum: 30
+            rowNum: 50
         };
     }
     componentWillMount(){
@@ -135,6 +135,10 @@ export default class Telephony extends React.Component{
         this.setCallDetailsFilter('duration', e.target.value);
     }
     loadRecordClickHandler(login, callid){
+        $('#' + callid).replaceWith($('<img>', {
+            'id': callid,
+            'src': require('./content/loader.gif')
+        }));
         mediator.publish(channels.TELEPHONY_GET_CALL_RECORD, {
             login: login,
             callid: callid
@@ -145,14 +149,24 @@ export default class Telephony extends React.Component{
                     'src': system.serverUrl + response.src
                 }));
                 $('#' + callid).audioPlayer();
+            }else{
+                $('#' + callid).replaceWith($('<span>', {
+                    'id': callid,
+                    'html': 'Нет данных'
+                }));
             }
         });
     }
     setPage(page){
         var self = this;
         self.setState({
-            page: page
+            page: 0
         });
+        setTimeout(function(){
+            self.setState({
+                page: page
+            });
+        }, 1);
     }
     render(){
         var self = this;
@@ -246,9 +260,10 @@ export default class Telephony extends React.Component{
                                             <th>{login}</th>
                                             {
                                                 loginData.map((el, i) => {
-                                                    return <td className="center info-cell"
+                                                    var className = parseInt(el) !== 0 ? 'info-cell' : '';
+                                                    return <td className={'center ' + className}
                                                                key={i}
-                                                               onClick={() => self.infoCellClickHandler(login, self.state.callsTotals.dates[i])}>{el}</td>
+                                                               onClick={parseInt(el) ? () => self.infoCellClickHandler(login, self.state.callsTotals.dates[i]) : function(){}}>{el}</td>
                                                 })
                                             }
                                         </tr>
@@ -318,7 +333,7 @@ export default class Telephony extends React.Component{
                         </div>
                         <ul className="pagination text-center">
                             {
-                                this.state.page !== 1 ?
+                                this.state.page !== 1 && self.state.callsDetails.length ?
                                     <li className="disabled">
                                         <a className="waves-effect"
                                            onClick={() => self.setPage(this.state.page - 1)}>
@@ -345,7 +360,7 @@ export default class Telephony extends React.Component{
                                 })
                             }
                             {
-                                pagesCount !== this.state.page ?
+                                pagesCount !== this.state.page && self.state.callsDetails.length ?
                                     <li className="waves-effect">
                                         <a className="waves-effect"
                                            onClick={() => self.setPage(this.state.page + 1)}>
