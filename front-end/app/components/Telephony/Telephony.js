@@ -204,12 +204,12 @@ export default class Telephony extends React.Component{
                     <div className="input-field col s3">
                         <input type="date" id="date-from" className="datepicker"
                                defaultValue={this.state.from} />
-                        <label htmlFor="date-from">Перид с</label>
+                        <label htmlFor="date-from" className="active">Перид с</label>
                     </div>
                     <div className="input-field col s3">
                         <input type="date" id="date-to" className="datepicker"
                                defaultValue={this.state.to} />
-                        <label htmlFor="date-to">Период по</label>
+                        <label htmlFor="date-to" className="active">Период по</label>
                     </div>
                     <div className="input-field col s3 hide">
                         <input type="number" id="duration" />
