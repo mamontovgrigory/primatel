@@ -1,5 +1,6 @@
 import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
 import Navigation from '../modules/Navigation/Navigation';
+import Shell from '../modules/Shell/Shell';
 
 var accountSchema = {
     'id': {
@@ -101,47 +102,6 @@ export default {
 
     /*#region breadcrumbs*/
 
-    NAVIGATION_GET_ITEMS:
-    {
-        'channel': 'NAVIGATION_GET_ITEMS',
-        'title': 'Return navigation items (routes)',
-        'method': Navigation.getItems,
-        'response': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'name': {
-                        'type': 'string'
-                    },
-                    'icon': {
-                        'type': 'string'
-                    },
-                    'to': {
-                        'type': 'string'
-                    },
-                    'src': {
-                        'type': 'string'
-                    },
-                    'description': {
-                        'type': 'string'
-                    },
-                    'roles': {
-                        'type': 'array',
-                        'items': {
-                            'type': 'string'
-                        }
-                    }
-                }
-            }
-        }
-    },
-
-    /*#endregion*/
-
-
-    /*#region breadcrumbs*/
-
     'BREADCRUMBS_GET_LIST': {
         'channel': 'BREADCRUMBS_GET_LIST',
         'method': Breadcrumbs.getList,
@@ -192,6 +152,65 @@ export default {
         'url': '/get_call_record.php',
         'title': 'Get call records',
         'type': 'function'
+    },
+
+    /*#endregion*/
+
+
+    /*#region navigation*/
+
+    NAVIGATION_GET_ITEMS:
+    {
+        'channel': 'NAVIGATION_GET_ITEMS',
+        'title': 'Return navigation items (routes)',
+        'method': Navigation.getItems,
+        'response': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'name': {
+                        'type': 'string'
+                    },
+                    'icon': {
+                        'type': 'string'
+                    },
+                    'to': {
+                        'type': 'string'
+                    },
+                    'src': {
+                        'type': 'string'
+                    },
+                    'description': {
+                        'type': 'string'
+                    },
+                    'roles': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string'
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /*#endregion*/
+
+
+    /*#region breadcrumbs*/
+
+    SHELL_NOTIFICATION_SHOW:
+    {
+        'channel': 'SHELL_NOTIFICATION_SHOW',
+        'title': 'Show notification',
+        'method': Shell.notification,
+        'type': 'object',
+        'properties': {
+            'text': {
+                'type': 'string'
+            }
+        }
     },
 
     /*#endregion*/

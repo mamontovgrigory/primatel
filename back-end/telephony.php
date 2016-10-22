@@ -15,6 +15,7 @@ class Telephony{
 	private $list_users_table = "list_users";
 	private $list_sips_table = "list_sips";
 	private $calls_details_table = "calls_details";
+	private $calls_details_updates_table = "calls_details_updates";
 	
 	private $recordsMaxCount = 1000;
 	
@@ -48,6 +49,12 @@ class Telephony{
 			`currency` VARCHAR(50),
 			`callid` VARCHAR(50) UNIQUE,
 			`disposition` VARCHAR(50)
+			);
+		");
+		$this->db->query("
+			CREATE TABLE IF NOT EXISTS ".$this->calls_details_updates_table." (
+			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+			`datetime` DATETIME
 			);
 		");
 	}
@@ -294,11 +301,17 @@ class Telephony{
 		}
 	}
 	
+	public function getUpdateDate(){
+		$result = $this->db->query("SELECT datetime FROM ".$this->calls_details_updates_table." ORDER BY id DESC LIMIT 1;");
+		return $result->fetch_assoc()["datetime"];
+	}
+	
 	public function update(){
 		echo "update start";		
 		$this->updateListUsers();
 		$this->updateSips();
 		$this->updateCallsDetails();
+		$this->db->query("INSERT INTO ".$this->calls_details_updates_table." (datetime) VALUES ('".date($this->datetime_format)."')");
 		echo "update finished";
 	}
 }

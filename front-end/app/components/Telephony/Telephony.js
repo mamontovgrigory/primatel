@@ -27,6 +27,12 @@ export default class Telephony extends React.Component{
                 loginList: result
             });
         });
+
+        mediator.publish(channels.TELEPHONY_GET_UPDATE_DATE, null, function(result){
+            self.setState({
+                updateDate: result.datetime
+            });
+        });
     }
     componentDidMount(){
         var self = this;
@@ -197,7 +203,6 @@ export default class Telephony extends React.Component{
         var pageIndex = (this.state.page - 1) * this.state.rowNum;
         var callsDetailsSlice = callsDetails.slice(pageIndex, pageIndex + this.state.rowNum);
 
-
         return (
             <div className="section" id="telephony">
                 <div className="row">
@@ -216,7 +221,7 @@ export default class Telephony extends React.Component{
                         <label htmlFor="duration">Длительность, сек</label>
                     </div>
                     <div className="col s3 note">
-                        Обновлено 13:08:59 13:10:2016
+                        {this.state.updateDate ? 'Обновлено ' + moment(this.state.updateDate).format(system.format.datetime) : ''}
                     </div>
                 </div>
                 <div className="row" id="loginList-block">
@@ -226,7 +231,8 @@ export default class Telephony extends React.Component{
                         this.state.loginList.map((el) => {
                             return (
                                 <div className="input-field col s3" key={el.id}>
-                                    <input type="checkbox" id={"login" + el.id} value={el.id} onChange={() => self.loginCheckboxChangeHandler(el.id)}/>
+                                    <input type="checkbox" id={"login" + el.id} value={el.id}
+                                           onChange={() => self.loginCheckboxChangeHandler(el.id)}/>
                                     <label htmlFor={"login" + el.id}>{el.login}</label>
                                 </div>
                             )
@@ -253,10 +259,10 @@ export default class Telephony extends React.Component{
                                 }
                             </tr>
                             {
-                                Object.keys(this.state.callsTotals.data).map(function(login) {
+                                Object.keys(this.state.callsTotals.data).map(function(login, index) {
                                     var loginData = self.state.callsTotals.data[login];
                                     return (
-                                        <tr>
+                                        <tr key={index}>
                                             <th>{login}</th>
                                             {
                                                 loginData.map((el, i) => {

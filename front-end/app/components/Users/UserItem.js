@@ -30,6 +30,9 @@ export default class UserItem extends React.Component{
             id: this.props.id
         }, this.state), function(){
             self.props.usersGetList();
+            mediator.publish(channels.SHELL_NOTIFICATION_SHOW, {
+                text: 'Данные пользователя сохранены'
+            });
         });
     }
     render(){

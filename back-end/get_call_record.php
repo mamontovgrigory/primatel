@@ -1,5 +1,6 @@
 <?php
 header('Access-Control-Allow-Origin: *');
+
 if($_POST){
 	include __DIR__."/telephony.php";
 	$telephony = new Telephony();
