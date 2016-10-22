@@ -349,12 +349,12 @@ export default class Telephony extends React.Component{
                                     : null
                             }
                             {
-                                pagesArr.map((el) => {
+                                pagesArr.map((el, index) => {
                                     var className = el === null ? '' : 'waves-effect';
                                     if(el === this.state.page)
                                         className += ' active';
                                     return (
-                                        <li className={className}>
+                                        <li key={index} className={className}>
                                             {
                                                 el === null ?
                                                     <a>...</a>
