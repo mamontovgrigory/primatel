@@ -1,11 +1,12 @@
 <?php
 class Database extends mysqli {
+	private $db = "telephony";
 	private $host = "localhost";
 	private $username = "root";
 	private $password = "";
 	
-    public function __construct($db) {
-        parent::__construct($this->host, $this->username, $this->password, $db);
+    public function __construct() {
+        parent::__construct($this->host, $this->username, $this->password, $this->db);
 
         if (mysqli_connect_error()) {
             die('Ошибка подключения (' . mysqli_connect_errno() . ') '
@@ -13,11 +14,4 @@ class Database extends mysqli {
         }
     }
 }
-/*class Database extends SQLite3
-{
-	function __construct($db_name)
-	{
-		$this->open($db_name);
-	}
-}*/
 ?>

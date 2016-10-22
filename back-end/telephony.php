@@ -12,13 +12,14 @@ class Telephony{
 	private $mode = "json";
 	private $sid;
 	private $db;
-	private $db_name = "telephony";
 	private $list_users_table = "list_users";
 	private $list_sips_table = "list_sips";
 	private $calls_details_table = "calls_details";
 	
+	private $recordsMaxCount = 1000;
+	
 	function __construct() {
-		$this->db = new Database($this->db_name);
+		$this->db = new Database();
 		$this->db->query("CREATE TABLE `".$this->list_users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
@@ -204,7 +205,7 @@ class Telephony{
 			SELECT ls.*, lu.login FROM `".$this->list_sips_table."` as ls
 			LEFT JOIN `".$this->list_users_table."`as lu ON lu.id = ls.login_id
 		");
-		$from = date($this->datetime_format, strtotime('-7 days'));
+		$from = date($this->datetime_format, strtotime('-4 days'));
 		$to = date($this->datetime_format);
 		$this->login();
 		while($sip = $result->fetch_assoc()){
@@ -220,9 +221,8 @@ class Telephony{
 					"page_size" => $page_size,
 					"page_number" => $page_number
 				);
-				//var_dump($params);
 				$data = $this->primatelApi("getCallsDetails", $params);
-				var_dump($data);
+				if($sip["login"] === "Audi")var_dump($data);
 				if($total == 0){
 					$total = $data->data->total;
 				}else{
@@ -232,12 +232,9 @@ class Telephony{
 				if($data->data->data){
 					$values = array();
 					foreach($data->data->data as $data_arr){
-						//$call_id_key = array_search("callid", $data->data->names);
-						//$this->downloadCallRecord($sip["login"], $data_arr[$call_id_key]);
-						//$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES (".$sip["id"].",'".implode("','", $data_arr)."')");	
 						array_push($values, ("(".$sip["id"].",'".implode("','", $data_arr)."')"));
 					}
-					$this->db->query("INSERT INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES ".implode(",", $values));
+					$this->db->query("REPLACE INTO ".$this->calls_details_table." (sip_login_id,".implode(",", $data->data->names).") VALUES ".implode(",", $values));
 				}				
 			} while($total >= $page_size);
 		}
@@ -284,14 +281,25 @@ class Telephony{
 		return "/records/".$call_id.".mp3";	
 	}
 	
+	public function deleteRecords(){
+		$dir = __DIR__.'/records';
+		$files = scandir($dir);
+		$excludes = array(".", "..");
+		if(count($files) > $this->recordsMaxCount + count($excludes)){
+			foreach($files as $file){
+				if(!in_array($file, $excludes)){
+					unlink($dir."/".$file);
+				}
+			}
+		}
+	}
+	
 	public function update(){
 		echo "update start";		
 		$this->updateListUsers();
 		$this->updateSips();
 		$this->updateCallsDetails();
-		echo "update finished";	
-		//echo "<pre>";
-		//echo json_encode($this->getListUsers());
+		echo "update finished";
 	}
 }
 ?>

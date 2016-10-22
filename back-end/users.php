@@ -3,11 +3,10 @@ include "database.php";
 
 class Users{
 	private $db;
-	private $db_name = "telephony";
 	private $users_table = "users";
 	
 	function __construct() {
-		$this->db = new Database($this->db_name);
+		$this->db = new Database();
 		$this->db->query("CREATE TABLE `".$this->users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
