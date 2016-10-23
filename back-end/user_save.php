@@ -1,11 +1,11 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 
-if($_REQUEST){
+if($_POST){
 	include __DIR__."/users.php";
 	$users = new Users();
 
-	$props = $_REQUEST;
+	$props = $_POST;
 	$props["is_admin"] = array_key_exists("isAdmin", $props) && $props["isAdmin"] === "true" ? 1 : 0;
 	if(array_key_exists("isAdmin", $props)){		
 		unset($props["isAdmin"]);

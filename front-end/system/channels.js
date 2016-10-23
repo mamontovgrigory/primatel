@@ -154,6 +154,12 @@ export default {
         'type': 'function'
     },
 
+    'TELEPHONY_GET_UPDATE_DATE': {
+        'channel': 'TELEPHONY_GET_UPDATE_DATE',
+        'url': '/get_update_date.php',
+        'title': 'Get update date'
+    },
+
     /*#endregion*/
 
 
