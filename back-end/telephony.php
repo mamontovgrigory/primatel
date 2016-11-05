@@ -248,25 +248,31 @@ class Telephony{
 		}
 	}
 	
-	public function getCallsDetails($login_id, $date, $duration){
-		$and = "";
+	public function getCallsDetails($login_ids = array(), $from = null, $to = null, $duration = null, $returnArray = true){
+		$from = $from ? $from : date($this->datetime_format, strtotime('-7 days'));
+		$to = $to ? $to : date($this->datetime_format);
+		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
 		if($duration) $and.= " AND duration >= ".$duration;
 		$query = "
 			SELECT cd.*, lu.login FROM ".$this->list_users_table." lu 
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
-			WHERE ls.sip_login LIKE '%did%' 
-			AND DATE(cd.time) = '".date($this->date_format,strtotime($date))."' 
-			AND lu.id = ".$login_id.$and." 
-			ORDER BY cd.time";
-		$result = $this->db->query($query);
-		$result_array = array();
+			WHERE ls.sip_login LIKE '%did%' 			
+			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from))."' 
+			AND '".date($this->datetime_format,strtotime($to))."'".$and." 
+			ORDER BY lu.login, cd.time";
+			
+		$result = $this->db->query($query);		
 		
-		while($res = $result->fetch_assoc()){			
-			array_push($result_array, $res);
-		}
-		
-		return $result_array;
+		if($returnArray){
+			$result_array = array();
+			while($res = $result->fetch_assoc()){			
+				array_push($result_array, $res);
+			}			
+			return $result_array;
+		}else{
+			return $result;
+		}		
 	}
 	
 	public function getCallRecord($user_login, $call_id){

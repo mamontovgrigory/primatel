@@ -1,6 +1,7 @@
 import Breadcrumbs from '../modules/Breadcrumbs/Breadcrumbs';
 import Navigation from '../modules/Navigation/Navigation';
 import Shell from '../modules/Shell/Shell';
+import Telephony from '../modules/Telephony/Telephony';
 
 var accountSchema = {
     'id': {
@@ -138,6 +139,12 @@ export default {
             'type': 'array',
             'items': 'string'
         }
+    },
+
+    'TELEPHONY_GET_REPORT': {
+        'channels': 'TELEPHONY_GET_REPORT',
+        'method': Telephony.getReport,
+        'title': 'Get report'
     },
 
     'TELEPHONY_GET_CALLS_DETAILS': {
