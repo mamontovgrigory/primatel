@@ -34,6 +34,11 @@ export default class Telephony extends React.Component{
             });
         });
     }
+    durationChangeHandler(e){
+        this.setState({
+            duration: e.target.value
+        });
+    }
     componentDidMount(){
         var self = this;
 
@@ -77,16 +82,17 @@ export default class Telephony extends React.Component{
         var self = this;
         $('#loginList-block').slideUp();
         mediator.publish(channels.TELEPHONY_GET_CALLS_TOTALS, {
-            "loginIds": self.state.loginIds,
-            "from": self.state.from,
-            "to": self.state.to
+            'loginIds': self.state.loginIds,
+            'from': self.state.from,
+            'to': self.state.to,
+            'duration': self.state.duration
         }, function(result){
             self.setState({
                 callsTotals: result
             });
         });
     }
-    infoCellClickHandler(login, date){
+    infoCellClickHandler(login, date, duration){
         var self = this;
         var loginObj = _.find(self.state.loginList, function(c){
             return c.login === login;
@@ -95,7 +101,8 @@ export default class Telephony extends React.Component{
         self.setPage(1);
         mediator.publish(channels.TELEPHONY_GET_CALLS_DETAILS, {
             loginId: loginObj.id,
-            date: date
+            date: date,
+            duration: duration
         }, function(result){
             self.setState({
                 chosenLogin: login,
@@ -136,11 +143,11 @@ export default class Telephony extends React.Component{
         this.setPage(1);
         this.setCallDetailsFilter('numto', e.target.value);
     }
-    durationChangeHandler(e){
+    filterDurationChangeHandler(e){
         this.setPage(1);
         this.setCallDetailsFilter('duration', e.target.value);
     }
-    loadRecordClickHandler(login, callid){
+    loadRecordClickHandler(login, callid, time){
         $('#' + callid).replaceWith($('<img>', {
             'id': callid,
             'src': require('./content/loader.gif')
@@ -153,6 +160,11 @@ export default class Telephony extends React.Component{
                 $('#' + callid).replaceWith($('<audio>', {
                     'id': callid,
                     'src': system.serverUrl + response.src
+                }));
+                $('#' + callid).parent().append($('<a>', {
+                    download: login + ' ' + time,
+                    href: system.serverUrl + response.src,
+                    html: 'Скачать'
                 }));
                 $('#' + callid).audioPlayer();
             }else{
@@ -216,8 +228,8 @@ export default class Telephony extends React.Component{
                                defaultValue={this.state.to} />
                         <label htmlFor="date-to" className="active">Период по</label>
                     </div>
-                    <div className="input-field col s3 hide">
-                        <input type="number" id="duration" />
+                    <div className="input-field col s3">
+                        <input type="number" id="duration" onChange={this.durationChangeHandler.bind(this)} />
                         <label htmlFor="duration">Длительность, сек</label>
                     </div>
                     <div className="col s3 note">
@@ -267,9 +279,10 @@ export default class Telephony extends React.Component{
                                             {
                                                 loginData.map((el, i) => {
                                                     var className = parseInt(el) !== 0 ? 'info-cell' : '';
+                                                    var duration = self.state.duration;
                                                     return <td className={'center ' + className}
                                                                key={i}
-                                                               onClick={parseInt(el) ? () => self.infoCellClickHandler(login, self.state.callsTotals.dates[i]) : function(){}}>{el}</td>
+                                                               onClick={parseInt(el) ? () => self.infoCellClickHandler(login, self.state.callsTotals.dates[i], duration) : function(){}}>{el}</td>
                                                 })
                                             }
                                         </tr>
@@ -308,7 +321,7 @@ export default class Telephony extends React.Component{
                                     </td>
                                     <td>
                                         <input type="text" id="duration" className="m-b-0"
-                                               onChange={this.durationChangeHandler.bind(this)}/>
+                                               onChange={this.filterDurationChangeHandler.bind(this)}/>
                                     </td>
                                     <td></td>
                                 </tr>
@@ -316,7 +329,7 @@ export default class Telephony extends React.Component{
                                     callsDetailsSlice.map((el, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td>{moment(el.time).format(system.format.time)}</td>
+                                                <td>{moment(el.time).format(system.format.datetime)}</td>
                                                 <td>{el.numfrom}</td>
                                                 <td>{el.numto}</td>
                                                 <td>{el.duration}</td>
@@ -325,7 +338,7 @@ export default class Telephony extends React.Component{
                                                         el.duration > 0 ?
                                                             <a className="waves-effect waves-light btn test"
                                                                id={el.callid}
-                                                               onClick={() => this.loadRecordClickHandler(this.state.chosenLogin, el.callid)}>Загрузить</a>
+                                                               onClick={() => this.loadRecordClickHandler(this.state.chosenLogin, el.callid, el.time)}>Загрузить</a>
                                                             :
                                                             <span>Нет записи</span>
                                                     }

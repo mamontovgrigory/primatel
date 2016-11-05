@@ -165,18 +165,20 @@ class Telephony{
 		}
 	}
 	
-	public function getCallsTotals($from = null, $to = null, $login_ids = array()){
+	public function getCallsTotals($login_ids = array(), $from = null, $to = null, $duration){
 		$from = $from ? $from :  date($this->datetime_format, strtotime('-7 days'));
 		$to = $to ? $to : date($this->datetime_format);
 		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
+		if($duration) $and.= " AND duration >= ".$duration;
 		$query = "
 			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM ".$this->list_users_table." lu
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id
 			WHERE ls.sip_login LIKE '%did%' 
-			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
+			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' 
+			AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
 			GROUP BY DATE(cd.time), lu.login
-			ORDER BY lu.login";		
+			ORDER BY lu.login";
 		$result = $this->db->query($query);
 
 		$result_array = array(
@@ -212,7 +214,7 @@ class Telephony{
 			SELECT ls.*, lu.login FROM `".$this->list_sips_table."` as ls
 			LEFT JOIN `".$this->list_users_table."`as lu ON lu.id = ls.login_id
 		");
-		$from = date($this->datetime_format, strtotime('-4 days'));
+		$from = date($this->datetime_format, strtotime('-1 days'));
 		$to = date($this->datetime_format);
 		$this->login();
 		while($sip = $result->fetch_assoc()){
@@ -229,7 +231,6 @@ class Telephony{
 					"page_number" => $page_number
 				);
 				$data = $this->primatelApi("getCallsDetails", $params);
-				if($sip["login"] === "Audi")var_dump($data);
 				if($total == 0){
 					$total = $data->data->total;
 				}else{
@@ -247,14 +248,16 @@ class Telephony{
 		}
 	}
 	
-	public function getCallsDetails($login_id, $date){
+	public function getCallsDetails($login_id, $date, $duration){
+		$and = "";
+		if($duration) $and.= " AND duration >= ".$duration;
 		$query = "
 			SELECT cd.*, lu.login FROM ".$this->list_users_table." lu 
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
 			WHERE ls.sip_login LIKE '%did%' 
 			AND DATE(cd.time) = '".date($this->date_format,strtotime($date))."' 
-			AND lu.id = ".$login_id." 
+			AND lu.id = ".$login_id.$and." 
 			ORDER BY cd.time";
 		$result = $this->db->query($query);
 		$result_array = array();
