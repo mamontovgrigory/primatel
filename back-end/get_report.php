@@ -28,13 +28,13 @@ while($res = $result->fetch_assoc()){
 	array_push($data, array(
 		$res["login"],
 		date($telephony->datetime_format,strtotime($res["time"])),
-		$res["numfrom"],
-		$res["numto"],
-		$res["duration"]
+		$telephony->formatPhoneNumber($res["numfrom"]),
+		$telephony->formatPhoneNumber($res["numto"]),
+		$tepephony->formatSeconds($res["duration"])
 	));
 }
 
-$filename = implode(" ", $logins)." ".$from." ".$to.".csv";
+$filename = implode("_", $logins)."_".str_replace(" ", "_", $from)."_".str_replace(" ", "_", $to).".csv";
 
 $reports->download_send_headers($filename);
 echo $reports->array_to_report($data, $titles);

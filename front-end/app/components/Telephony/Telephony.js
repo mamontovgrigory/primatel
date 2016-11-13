@@ -364,7 +364,7 @@ export default class Telephony extends React.Component {
                                                 <td>{el.duration}</td>
                                                 <td style={{'minWidth': '300px'}}>
                                                     {
-                                                        el.duration > 0 ?
+                                                        el.callid ?
                                                             <a className="waves-effect waves-light btn test"
                                                                id={el.callid}
                                                                onClick={() => this.loadRecordClickHandler(this.state.chosenLogin, el.callid, el.time)}>Загрузить</a>

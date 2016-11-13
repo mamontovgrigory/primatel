@@ -59,6 +59,14 @@ class Telephony{
 		");
 	}
 	
+	public function formatSeconds($seconds){
+		return gmdate("H:i:s", $seconds);
+	}
+	
+	public function formatPhoneNumber($data){
+		return "+".substr($data, 0, 1)." (".substr($data, 1, 3).") ".substr($data, 4, 3)."-".substr($data, 7, 2)."-".substr($data,9);
+	}
+	
 	private function primatelApi($svc = "login", $query_params = array(), $json = true){
 		$string_params = array(
 			"svc" => $svc,
