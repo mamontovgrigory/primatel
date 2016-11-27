@@ -3,10 +3,18 @@ class Navigation{
         var items = [
             {
                 name: 'Пользователи',
-                icon: 'recent_actors',
+                icon: 'perm_identity',
                 to: 'users',
                 src: require('./content/users.png'),
                 description: 'Создание, редактирование и удаление пользователей системы',
+                roles: [ 'admin' ]
+            },
+            {
+                name: 'Настройки групп',
+                icon: 'supervisor_account',
+                to: 'groups',
+                src: require('./content/groups.png'),
+                description: 'Настройки прав доступа',
                 roles: [ 'admin' ]
             },
             /*{

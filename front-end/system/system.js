@@ -1,6 +1,7 @@
 import Main from '../app/components/Main/Main';
 import Telephony from '../app/components/Telephony/Telephony';
 import Users from '../app/components/Users/Users';
+import Security from '../app/components/Groups/Groups';
 
 module.exports = {
     serverUrl: (NODE_ENV.trim() === 'development' ? 'http://localhost' : window.location.origin) + '/ajax',
@@ -16,6 +17,10 @@ module.exports = {
         {
             path: 'users',
             component: Users
+        },
+        {
+            path: 'groups',
+            component: Security
         }
     ],
     breadcrumbs: {
@@ -40,6 +45,13 @@ module.exports = {
         users: {
             name: 'Пользователи',
             href: '/users',
+            parents: [
+                'index'
+            ]
+        },
+        groups: {
+            name: 'Настройки групп',
+            href: '/groups',
             parents: [
                 'index'
             ]

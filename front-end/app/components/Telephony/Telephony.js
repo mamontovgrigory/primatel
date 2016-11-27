@@ -85,7 +85,7 @@ export default class Telephony extends React.Component {
         }
     }
 
-    getFiltersObject(){
+    getFiltersObject() {
         return {
             'loginIds': this.state.loginIds,
             'from': this.state.from,

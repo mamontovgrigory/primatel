@@ -7,6 +7,7 @@ class Database extends mysqli {
 	
     public function __construct() {
         parent::__construct($this->host, $this->username, $this->password, $this->db);
+		parent::query("SET NAMES 'utf8'");
 
         if (mysqli_connect_error()) {
             die('Ошибка подключения (' . mysqli_connect_errno() . ') '

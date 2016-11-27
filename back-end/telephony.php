@@ -21,7 +21,7 @@ class Telephony{
 	
 	function __construct() {
 		$this->db = new Database();
-		$this->db->query("CREATE TABLE `".$this->list_users_table."` (
+		$this->db->query("CREATE TABLE IF NOT EXISTS `".$this->list_users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
 			`balance` VARCHAR(50), 

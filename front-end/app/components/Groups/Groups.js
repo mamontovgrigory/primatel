@@ -1,46 +1,39 @@
-import UserItem from './UserItem';
+import GroupItem from './GroupItem';
 
-export default class Users extends React.Component {
+export default class Security extends React.Component{
     constructor() {
         super();
 
         this.state = {
-            currentUser: {},
-            users: [],
-            groupsList: []
+            currentGroup: {},
+            groups: []
         };
     }
 
     componentWillMount() {
-        this.usersGetList();
+        this.groupsGetList()
     }
 
     componentDidMount() {
         $('.collapsible').collapsible();
     }
 
-    usersGetList() {
+    groupsGetList() {
         var self = this;
-
-        mediator.publish(channels.GROUPS_GET_LIST, null, function (groupsList) {
+        mediator.publish(channels.GROUPS_GET_LIST, null, function (response) {
             self.setState({
-                groupsList: groupsList
-            });
-            mediator.publish(channels.USERS_GET_LIST, null, function (users) {
-                self.setState({
-                    users: users
-                })
-            });
+                groups: response
+            })
         });
     }
 
     addClickHandler() {
         var self = this;
-        var userNumber = this.state.users.length + 1;
-        mediator.publish(channels.USERS_SAVE, {
-            login: 'user_' + userNumber
+        var userNumber = this.state.groups.length + 1;
+        mediator.publish(channels.GROUPS_SAVE, {
+            name: 'group_' + userNumber
         }, function () {
-            self.usersGetList();
+            self.groupsGetList();
         });
     }
 
@@ -51,31 +44,30 @@ export default class Users extends React.Component {
         $modal.openModal();
 
         self.setState({
-            currentUser: self.state.users[index]
+            currentGroup: self.state.groups[index]
         });
     }
 
     deleteConfirm() {
         var self = this;
-        mediator.publish(channels.USERS_DELETE, {
-            id: self.state.currentUser.id
+        mediator.publish(channels.GROUPS_DELETE, {
+            id: self.state.currentGroup.id
         }, function () {
-            self.usersGetList();
+            self.groupsGetList();
         });
     }
 
     render() {
         return (
             <div>
-                <h4>Пользователи</h4>
+                <h4>Группы</h4>
                 <ul className="collapsible popout" data-collapsible="accordion">
                     {
-                        this.state.users.map((el, index) => {
+                        this.state.groups.map((el, index) => {
                             return (
-                                <UserItem key={index} {...el}
-                                          groupsList={this.state.groupsList}
+                                <GroupItem key={index} {...el}
                                           deleteClickHandler={() => this.deleteClickHandler(index)}
-                                          usersGetList={() => this.usersGetList()}/>
+                                          groupsGetList={() => this.groupsGetList()}/>
                             )
                         })
                     }
@@ -92,7 +84,7 @@ export default class Users extends React.Component {
                 <div id="confirm-modal" className="modal">
                     <div className="modal-content">
                         <h4>Удалить пользователя?</h4>
-                        <p>Вы действительно хотите удалить пользователя {this.state.currentUser.login}?</p>
+                        <p>Вы действительно хотите удалить группу {this.state.currentGroup.login}?</p>
                     </div>
                     <div className="modal-footer">
                         <a className="modal-action modal-close waves-effect waves-light btn">Нет</a>

@@ -30,6 +30,15 @@ var userSchema = {
     }
 };
 
+var groupSchema = {
+    'id': {
+        'type': 'string'
+    },
+    'name': {
+        'type': 'string'
+    }
+};
+
 export default {
 
     /*#region breadcrumbs*/
@@ -259,6 +268,46 @@ export default {
         'channel': 'USERS_DELETE',
         'title': '',
         'url': '/user_delete.php',
+        'type': 'object',
+        'properties': {
+            'id': {
+                'type': 'string'
+            }
+        }
+    },
+
+    /*#endregion*/
+
+    /*#region groups*/
+
+    GROUPS_GET_LIST:
+    {
+        'channel': 'GROUPS_GET_LIST',
+        'title': '',
+        'url': '/get_groups.php',
+        'response': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': groupSchema
+            }
+        }
+    },
+
+    GROUPS_SAVE:
+    {
+        'channel': 'GROUPS_SAVE',
+        'title': '',
+        'url': '/group_save.php',
+        'type': 'object',
+        'properties': groupSchema
+    },
+
+    GROUPS_DELETE:
+    {
+        'channel': 'GROUPS_DELETE',
+        'title': '',
+        'url': '/group_delete.php',
         'type': 'object',
         'properties': {
             'id': {

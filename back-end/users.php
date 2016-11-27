@@ -1,5 +1,5 @@
 <?php
-include "database.php";
+include __DIR__."/database.php";
 
 class Users{
 	private $db;
@@ -7,7 +7,7 @@ class Users{
 	
 	function __construct() {
 		$this->db = new Database();
-		$this->db->query("CREATE TABLE `".$this->users_table."` (
+		$this->db->query("CREATE TABLE IF NOT EXISTS `".$this->users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
 			`password` VARCHAR(60),
@@ -31,7 +31,7 @@ class Users{
 	}
 	
 	public function getList($returnArray = true){
-		$result = $this->db->query("SELECT id, login, is_admin as isAdmin FROM ".$this->users_table);
+		$result = $this->db->query("SELECT id, login, is_admin as isAdmin, group_id as groupId FROM ".$this->users_table);
 		if($returnArray){
 			$result_array = array();
 			while($res = $result->fetch_assoc()){
@@ -47,7 +47,7 @@ class Users{
 	public function save($props){
 		if(array_key_exists("id", $props)){
 			$password = array_key_exists("password", $props) ? ",password='".$props["password"]."'" : "";
-			$this->db->query("UPDATE ".$this->users_table." SET login='".$props["login"]."',is_admin=".$props["is_admin"].$password." WHERE id = ".$props["id"]);
+			$this->db->query("UPDATE ".$this->users_table." SET login='".$props["login"]."',group_id=".$props["group_id"].$password." WHERE id = ".$props["id"]);
 		}else{
 			$props["id"] = $this->db->query("INSERT INTO ".$this->users_table." (".implode(",", array_keys($props)).") VALUES ('".implode("','", $props)."')");
 		}

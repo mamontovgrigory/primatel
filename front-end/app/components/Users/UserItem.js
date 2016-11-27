@@ -1,41 +1,62 @@
-export default class UserItem extends React.Component{
-    componentWillMount(){
-        this.setState({
-            id: this.props.id,
-            login: this.props.login,
-            isAdmin: this.props.isAdmin
-        });
+export default class UserItem extends React.Component {
+    constructor(props){
+        super();
+
+        this.state = {
+            id: props.id,
+            login: props.login,
+            isAdmin: props.isAdmin,
+            groupId: props.groupId,
+            groupsList: props.groupsList
+        }
     }
-    componentDidMount(){
+
+    componentDidMount() {
         Materialize.updateTextFields();
+        $('#select' + this.props.id).material_select();
+        $('#select' + this.props.id).on('change', this.groupChangeHandler.bind(this));
     }
-    loginChangeHandler(e){
+
+    loginChangeHandler(e) {
         this.setState({
-           login: e.target.value
+            login: e.target.value
         });
     }
-    isAdminChangeHandler(e){
+
+    isAdminChangeHandler(e) {
         this.setState({
             isAdmin: e.target.checked
         });
     }
-    passwordChangeHandler(e){
+
+    groupChangeHandler(e) {
+        this.setState({
+            groupId: e.target.value
+        });
+    }
+
+    passwordChangeHandler(e) {
         this.setState({
             password: e.target.value
         });
     }
-    saveClickHandler(){
+
+    saveClickHandler() {
         var self = this;
-        mediator.publish(channels.USERS_SAVE, _.assignIn({
-            id: this.props.id
-        }, this.state), function(){
+        mediator.publish(channels.USERS_SAVE, {
+            id: self.state.id,
+            login: self.state.login,
+            isAdmin: self.state.isAdmin,
+            groupId: self.state.groupId
+        }, function () {
             self.props.usersGetList();
             mediator.publish(channels.SHELL_NOTIFICATION_SHOW, {
                 text: 'Данные пользователя сохранены'
             });
         });
     }
-    render(){
+
+    render() {
         return (
             <li className={this.state.id ? '' : 'active'}>
                 <div className={this.state.id ? 'collapsible-header' : 'collapsible-header active'}>
@@ -53,21 +74,29 @@ export default class UserItem extends React.Component{
                         <div className="input-field col s6">
                             <input id={'login-' + this.state.id} type="text"
                                    defaultValue={this.state.login}
-                                   onChange={this.loginChangeHandler.bind(this)} />
+                                   onChange={this.loginChangeHandler.bind(this)}/>
                             <label htmlFor={'login-' + this.props.id}>Логин</label>
                         </div>
                         <div className="input-field col s6">
-                            <input id={'is-admin-' + this.state.id} type="checkbox"
-                                   defaultChecked={this.state.isAdmin}
-                                   onChange={this.isAdminChangeHandler.bind(this)} />
-                            <label htmlFor={'is-admin-' + this.props.id}>Администратор</label>
+                            <select id={'select' + this.props.id} value={this.state.groupId}>
+                                <option value="">Без группы</option>
+                                {
+                                    this.state.groupsList.map((el) => {
+                                        return (
+                                            <option value={el.id} key={el.id}>{el.name}</option>
+                                        )
+                                    })
+                                }
+                            </select>
+                            <label>Группа</label>
                         </div>
                     </div>
                     <div className="row">
                         <div className="input-field col s6">
                             <input id={'password-' + this.state.id} type="password"
-                                   onChange={this.passwordChangeHandler.bind(this)} />
-                            <label htmlFor={'password-' + this.state.id}>{this.state.id ? 'Новый пароль' : 'Пароль'}</label>
+                                   onChange={this.passwordChangeHandler.bind(this)}/>
+                            <label
+                                htmlFor={'password-' + this.state.id}>{this.state.id ? 'Новый пароль' : 'Пароль'}</label>
                         </div>
                     </div>
                     <div className="row">
