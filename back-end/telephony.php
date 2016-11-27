@@ -166,10 +166,12 @@ class Telephony{
 				"page_number" => 1
 			);
 			$data = $this->primatelApi("listSip", $params);
-			$key = array_search("login", $data->data->names);		
-			foreach($data->data->data as $data_arr){
-				$this->db->query("INSERT INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
-			}
+			if(gettype($data->data) === "object"){
+				$key = array_search("login", $data->data->names);		
+				foreach($data->data->data as $data_arr){
+					$this->db->query("INSERT INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
+				}
+			}			
 		}
 	}
 	
