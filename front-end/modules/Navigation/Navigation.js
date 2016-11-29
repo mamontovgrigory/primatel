@@ -17,7 +17,7 @@ class Navigation{
                 description: 'Настройки прав доступа',
                 roles: [ 'admin' ]
             },
-            /*{
+             /*{
                 name: 'Личные кабинеты',
                 icon: 'contact_phone',
                 to: 'accounts',

@@ -40,8 +40,10 @@ class Groups{
 		if($returnArray){
 			$result_array = array();
 			$permissions = $this->getPermissions();
-			while($res = $result->fetch_assoc()){	
-				$res["permissions"] = $permissions;			
+			$values = $this->getPermissionsValues();
+			while($res = $result->fetch_assoc()){
+				$res["values"] = array_key_exists($res["id"], $values) ? $values[$res["id"]] : array();
+				$res["permissions"] = $permissions;
 				array_push($result_array, $res);
 			}			
 			return $result_array;
@@ -66,6 +68,22 @@ class Groups{
 					$res["list"] = $list;
 				}			
 				array_push($result_array, $res);
+			}			
+			return $result_array;
+		}else{
+			return $result;
+		}
+	}
+	
+	public function getPermissionsValues($returnArray = true){
+		$result = $this->db->query("SELECT id, permission_id as permissionId, group_id as groupId, value FROM ".$this->permissions_values_table);
+		if($returnArray){
+			$result_array = array();
+			while($res = $result->fetch_assoc()){
+				if(!array_key_exists($res["groupId"], $result_array)){
+					$result_array[$res["groupId"]] = array();
+				}
+				array_push($result_array[$res["groupId"]], $res);
 			}			
 			return $result_array;
 		}else{

@@ -214,6 +214,8 @@ export default class Telephony extends React.Component {
     render() {
         var self = this;
 
+        var daysTotals = [];
+
         var callsDetails = _.filter(self.state.callsDetails, function (c) {
             var valid = true;
             _.forEach(self.state.callsDetailsFilter, function (value, key) {
@@ -292,21 +294,27 @@ export default class Telephony extends React.Component {
                             <th>Клиенты</th>
                             {
                                 this.state.callsTotals.dates.map((el, index) => {
+                                    if (!_.has(daysTotals, index)) daysTotals[index] = 0;
                                     return (
                                         <th key={index}>{moment(el).format(system.format.date)}</th>
                                     )
                                 })
                             }
+                            <th>Всего</th>
                         </tr>
                         {
                             Object.keys(this.state.callsTotals.data).map(function (login, index) {
                                 var loginData = self.state.callsTotals.data[login];
+                                var clientTotal = 0;
                                 return (
                                     <tr key={index}>
-                                        <th>{login}</th>
+                                        <td>{login}</td>
                                         {
                                             loginData.map((el, i) => {
-                                                var className = parseInt(el) !== 0 ? 'info-cell' : '';
+                                                var count = parseInt(el);
+                                                daysTotals[i] += count;
+                                                clientTotal += count;
+                                                var className = count !== 0 ? 'info-cell' : '';
                                                 var duration = self.state.duration;
                                                 return <td className={'center ' + className}
                                                            key={i}
@@ -314,10 +322,26 @@ export default class Telephony extends React.Component {
                                                            }}>{el}</td>
                                             })
                                         }
+                                        {
+                                            <th className="center">{clientTotal}</th>
+                                        }
                                     </tr>
                                 )
                             })
                         }
+                        <tr>
+                            <th>Всего</th>
+                            {
+                                daysTotals.map((el, i) => {
+                                    return (
+                                        <th key={i} className="center">{el}</th>
+                                    )
+                                })
+                            }
+                            <th className="center">{_.reduce(daysTotals, function (sum, n) {
+                                return sum + n;
+                            }, 0)}</th>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

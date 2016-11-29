@@ -1,12 +1,43 @@
 export default class UserItem extends React.Component {
-    constructor(props){
+    constructor(props) {
         super();
+
+        /*var setting = _.find(this.state.values, function (v) {
+            return parseInt(v.permissionId) === parseInt(el.id);
+        });
+        var value = el.list ? [] : false;
+        if(setting){
+            if (el.list) {
+                value = setting.value.split(',');
+            } else {
+                value = setting.value === 'true';
+            }
+        }
+        console.log(setting, value);*/
+
+        var settings = {};
+        _.forEach(props.values, function(val, i){
+            var permission = _.find(props.permissions, function(p){
+                return parseInt(p.id) === parseInt(val.permissionId);
+            });
+            var value = permission.list ? [] : false;
+            if (permission.list) {
+                value = _.map(val.value.split(','), function(v){
+                    return parseInt(v);
+                });
+            } else {
+                value = val.value === 'true';
+            }
+            settings[parseInt(permission.id)] = value;
+        });
+
+        console.log(settings);
 
         this.state = {
             id: props.id,
             name: props.name,
             permissions: props.permissions,
-            settings: props.settings ? props.settings : {}
+            settings: settings
         }
     }
 
@@ -54,16 +85,17 @@ export default class UserItem extends React.Component {
         });
     }
 
-    selectAllCheckboxChangeHandler(){
+    selectAllCheckboxChangeHandler() {
 
     }
 
     listItemCheckboxChangeHandler(permissionId, listItemId, e) {
         var settings = this.state.settings;
+        listItemId = parseInt(listItemId);
         var itemsList = settings[permissionId] ? settings[permissionId] : [];
-        if(e.target.checked){
+        if (e.target.checked) {
             itemsList.push(listItemId);
-        }else{
+        } else {
             itemsList = _.without(itemsList, listItemId);
         }
         settings[permissionId] = itemsList;
@@ -96,6 +128,7 @@ export default class UserItem extends React.Component {
                     {
                         this.state.permissions.map((el) => {
                             var checkboxId = this.state.id + el.id;
+                            var value = this.state.settings[parseInt(el.id)];
                             return (
                                 el.list ?
                                     <div key={el.id}>
@@ -118,10 +151,13 @@ export default class UserItem extends React.Component {
                                             {
                                                 el.list.map((li) => {
                                                     var listCheckboxId = this.state.id + el.id + li.id;
+                                                    var checked = _.indexOf(value, parseInt(li.id)) !== -1;
                                                     return (
                                                         <div className="input-field col s3" key={li.id}>
-                                                            <input type="checkbox" id={"li" + listCheckboxId} value={li.id}
-                                                            onChange={this.listItemCheckboxChangeHandler.bind(this, el.id, li.id)}/>
+                                                            <input type="checkbox" id={"li" + listCheckboxId}
+                                                                   value={li.id}
+                                                                   defaultChecked={checked}
+                                                                   onChange={this.listItemCheckboxChangeHandler.bind(this, el.id, li.id)}/>
                                                             <label htmlFor={"li" + listCheckboxId}>{li.name}</label>
                                                         </div>
                                                     )
@@ -132,7 +168,9 @@ export default class UserItem extends React.Component {
                                     :
                                     <div className="row m-b-0" key={el.id}>
                                         <div className="input-field col s12">
-                                            <input type="checkbox" id={"permission" + checkboxId} name={el.id} value={el.id}
+                                            <input type="checkbox" id={"permission" + checkboxId} name={el.id}
+                                                   value={el.id}
+                                                   defaultChecked={value}
                                                    onChange={this.permissionCheckboxChangeHandler.bind(this)}/>
                                             <label htmlFor={"permission" + checkboxId}>{el.name}</label>
                                         </div>
