@@ -23,7 +23,7 @@ export default class Authorization extends React.Component{
                     system.user = response;
                     $.cookie('login', response.login);
                     $.cookie('isAdmin', response.isAdmin);
-                    window.location = '#/';
+                    window.location.reload();
                 }else{
                     self.setState({ notification: 'Неправильный логин или пароль' });
                 }

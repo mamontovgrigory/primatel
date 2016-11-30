@@ -30,7 +30,7 @@ while($res = $result->fetch_assoc()){
 		date($telephony->datetime_format,strtotime($res["time"])),
 		$telephony->formatPhoneNumber($res["numfrom"]),
 		$telephony->formatPhoneNumber($res["numto"]),
-		$tepephony->formatSeconds($res["duration"])
+		$telephony->formatSeconds($res["duration"])
 	));
 }
 

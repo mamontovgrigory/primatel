@@ -47,7 +47,8 @@ export default class UserItem extends React.Component {
             id: self.state.id,
             login: self.state.login,
             isAdmin: self.state.isAdmin,
-            groupId: self.state.groupId
+            groupId: self.state.groupId,
+            password: self.state.password
         }, function () {
             self.props.usersGetList();
             mediator.publish(channels.SHELL_NOTIFICATION_SHOW, {

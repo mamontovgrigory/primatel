@@ -25,7 +25,10 @@ export default class Telephony extends React.Component {
         var self = this;
         mediator.publish(channels.TELEPHONY_GET_LIST_USERS, null, function (result) {
             self.setState({
-                loginList: result
+                loginList: result,
+                loginIds: _.map(result, function (r) {
+                    return r.id;
+                })
             });
         });
 
@@ -74,15 +77,27 @@ export default class Telephony extends React.Component {
         $('#loginList-block').slideToggle();
     }
 
+    selectAllClickHandler(e) {
+        this.setState({
+            loginIds: e.target.checked ? _.map(this.state.loginList, function (r) {
+                return r.id;
+            }) : []
+        });
+    }
+
     loginCheckboxChangeHandler(loginId) {
         var index = _.findIndex(this.state.loginIds, function (u) {
             return u === loginId;
         });
+        var loginIds = this.state.loginIds;
         if (index === -1) {
-            this.state.loginIds.push(loginId);
+            loginIds.push(loginId);
         } else {
-            this.state.loginIds.splice(index, 1);
+            loginIds.splice(index, 1);
         }
+        this.setState({
+            loginIds: loginIds
+        });
     }
 
     getFiltersObject() {
@@ -263,20 +278,33 @@ export default class Telephony extends React.Component {
                         {this.state.updateDate ? 'Обновлено ' + moment(this.state.updateDate).format(system.format.datetime) : ''}
                     </div>
                 </div>
-                <div className="row" id="loginList-block">
-                    <div className="divider"></div>
-                    <h4>Клиенты</h4>
-                    {
-                        this.state.loginList.map((el) => {
-                            return (
-                                <div className="input-field col s3" key={el.id}>
-                                    <input type="checkbox" id={"login" + el.id} value={el.id}
-                                           onChange={() => self.loginCheckboxChangeHandler(el.id)}/>
-                                    <label htmlFor={"login" + el.id}>{el.login}</label>
-                                </div>
-                            )
-                        })
-                    }
+                <div id="loginList-block">
+                    <div className="row">
+                        <div className="divider"></div>
+                        <h4>Клиенты</h4>
+                    </div>
+                    <div className="row">
+                        <div className="input-field col s3">
+                            <input type="checkbox" id={"select-all"}
+                                   checked={this.state.loginList.length === this.state.loginIds.length}
+                                   onClick={this.selectAllClickHandler.bind(this)}/>
+                            <label htmlFor={"select-all"}>Выбрать все</label>
+                        </div>
+                    </div>
+                    <div className="row">
+                        {
+                            this.state.loginList.map((el) => {
+                                return (
+                                    <div className="input-field col s3" key={el.id}>
+                                        <input type="checkbox" id={"login" + el.id} value={el.id}
+                                               checked={_.indexOf(this.state.loginIds, el.id) !== -1}
+                                               onChange={() => self.loginCheckboxChangeHandler(el.id)}/>
+                                        <label htmlFor={"login" + el.id}>{el.login}</label>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
                 </div>
                 <div className="clear">
                     <a className="waves-effect waves-light btn right m-l-10"

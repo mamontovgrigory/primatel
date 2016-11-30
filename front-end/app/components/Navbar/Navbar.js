@@ -27,7 +27,8 @@ export default class Navbar extends React.Component{
         system.user = null;
         $.removeCookie('login');
         $.removeCookie('isAdmin');
-        window.location = '#/';
+        //window.location = '#/';
+        window.location.reload();
     }
     render(){
         var user = system.user;

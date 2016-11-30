@@ -1,11 +1,12 @@
 <?php
 date_default_timezone_set("Europe/Moscow");
-include "database.php";
+include __DIR__."/database.php";
 
 class Telephony{
 	public $date_format = "Y-m-d";
 	public $datetime_format = "Y-m-d H:i:s";
 	
+	private $groups;
 	private $url = "http://tp-api.primatel.ru/";
 	private $login = "tvtrade";
 	private $password = "iVnR6S5j2v6";
@@ -21,6 +22,7 @@ class Telephony{
 	
 	function __construct() {
 		$this->db = new Database();
+		
 		$this->db->query("CREATE TABLE IF NOT EXISTS `".$this->list_users_table."` (
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
@@ -143,16 +145,28 @@ class Telephony{
 	}
 	
 	public function getListUsers($returnArray = true){
-		$result = $this->db->query("SELECT * FROM ".$this->list_users_table." ORDER BY login");
-		if($returnArray){
-			$result_array = array();
-			while($res = $result->fetch_assoc()){
-				array_push($result_array, $res);
+		$user_id = $_COOKIE["user_id"];
+		if($user_id){
+			$permissions = $this->db->query("SELECT pv.* FROM USERS u 
+			LEFT JOIN groups g ON u.group_id = g.id
+			LEFT JOIN permissions_values pv ON g.id = pv.group_id 
+			INNER JOIN permissions p ON p.id = pv.permission_id
+			WHERE u.id = ".$user_id." AND p.alias = 'list_users'")->fetch_assoc();
+			if($permissions){
+				$result = $this->db->query("SELECT * FROM ".$this->list_users_table." WHERE id IN(".$permissions["value"].") ORDER BY login");
+				if($returnArray){
+					$result_array = array();
+					if($result){
+						while($res = $result->fetch_assoc()){
+							array_push($result_array, $res);
+						}	
+					}							
+					return $result_array;
+				}else{
+					return $result;
+				}
 			}			
-			return $result_array;
-		}else{
-			return $result;
-		}
+		}		
 	}
 	
 	public function updateSips(){
@@ -178,7 +192,7 @@ class Telephony{
 	public function getCallsTotals($login_ids = array(), $from = null, $to = null, $duration){
 		$from = $from ? $from :  date($this->datetime_format, strtotime('-7 days'));
 		$to = $to ? $to : date($this->datetime_format);
-		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
+		$and = " AND lu.id IN (".implode(",", $login_ids).")";
 		if($duration) $and.= " AND duration >= ".$duration;
 		$query = "
 			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM ".$this->list_users_table." lu

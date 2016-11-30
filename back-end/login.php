@@ -6,6 +6,9 @@ if($_REQUEST && array_key_exists("login", $_REQUEST) && array_key_exists("passwo
 	$users = new Users();
 	
 	$result = $users->login($_REQUEST["login"], $_REQUEST["password"]);
+	
+	setcookie("user_id", $result["id"]);
+	
 	echo json_encode($result);
 }
 ?>
