@@ -1,13 +1,14 @@
-import { Link } from 'react-router';
+import {Link} from 'react-router';
 
-export default class Navbar extends React.Component{
-    constructor(){
+export default class Navbar extends React.Component {
+    constructor() {
         super();
 
         this.state = {
-            modules:[]
+            modules: []
         }
     }
+
     componentWillMount() {
         var self = this;
         mediator.publish(channels.NAVIGATION_GET_ITEMS, null, function (response) {
@@ -16,21 +17,25 @@ export default class Navbar extends React.Component{
             });
         });
     }
+
     componentDidMount() {
         $(".side-nav-collapse").sideNav();
+        $(".dropdown-button").dropdown();
 
-        $('.side-nav-close').on('click', function(){
+        $('.side-nav-close').on('click', function () {
             $('.side-nav').sideNav('hide');
         });
     }
-    logoutClickHandler(){
+
+    logoutClickHandler() {
         system.user = null;
         $.removeCookie('login');
         $.removeCookie('isAdmin');
-        //window.location = '#/';
+        window.location = '#/';
         window.location.reload();
     }
-    render(){
+
+    render() {
         var user = system.user;
         return (
             <nav>
@@ -66,7 +71,7 @@ export default class Navbar extends React.Component{
                 <ul id="slide-out" className="side-nav">
                     <li>
                         <Link to="/" className="side-nav-close display-inline-block p-l-0">
-                            <img className="background" src={require('./content/crm.png')} />
+                            <img className="background" src={require('./content/crm.png')}/>
                         </Link>
                     </li>
                     {
@@ -81,7 +86,9 @@ export default class Navbar extends React.Component{
                             )
                         })
                     }
-                    <li><div className="divider"></div></li>
+                    <li>
+                        <div className="divider"></div>
+                    </li>
                     <li><a className="waves-effect side-nav-close">Закрыть</a></li>
                 </ul>
             </nav>

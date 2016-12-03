@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set("Europe/Moscow");
-include __DIR__."/database.php";
+include_once __DIR__."/database.php";
 
 class Telephony{
 	public $date_format = "Y-m-d";
@@ -145,7 +145,7 @@ class Telephony{
 	}
 	
 	public function getListUsers($returnArray = true){
-		$user_id = $_COOKIE["user_id"];
+		$user_id = array_key_exists("user_id", $_COOKIE) ? $_COOKIE["user_id"] : null;
 		if($user_id){
 			$permissions = $this->db->query("SELECT pv.* FROM USERS u 
 			LEFT JOIN groups g ON u.group_id = g.id

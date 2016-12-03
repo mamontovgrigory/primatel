@@ -286,7 +286,7 @@ export default class Telephony extends React.Component {
                     <div className="row">
                         <div className="input-field col s3">
                             <input type="checkbox" id={"select-all"}
-                                   checked={this.state.loginList.length === this.state.loginIds.length}
+                                   checked={this.state.loginList && this.state.loginList.length === this.state.loginIds.length}
                                    onClick={this.selectAllClickHandler.bind(this)}/>
                             <label htmlFor={"select-all"}>Выбрать все</label>
                         </div>

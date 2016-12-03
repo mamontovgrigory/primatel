@@ -22,16 +22,34 @@ export default class Security extends React.Component{
         var self = this;
         mediator.publish(channels.GROUPS_GET_LIST, null, function (response) {
             self.setState({
+                currentGroup: {},
+                groups: []
+            });
+            self.setState({
+                currentGroup: {},
                 groups: response
-            })
+            });
         });
     }
 
     addClickHandler() {
         var self = this;
-        var userNumber = this.state.groups.length + 1;
+
+        var groupNumber = this.state.groups.length,
+            namePrefix = 'group_',
+            groupName = '';
+        var isUnique = false;
+        do {
+            groupNumber++;
+            groupName = namePrefix + groupNumber;
+            isUnique = _.find(this.state.groups, function (u) {
+                return u.name === groupName;
+            });
+            isUnique = !isUnique;
+        } while (!isUnique);
+        
         mediator.publish(channels.GROUPS_SAVE, {
-            name: 'group_' + userNumber
+            name: 'group_' + groupNumber
         }, function () {
             self.groupsGetList();
         });

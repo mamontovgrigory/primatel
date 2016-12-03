@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-include __DIR__."/database.php";
+include_once __DIR__."/database.php";
 
 class Groups{
 	private $db;

@@ -1,5 +1,5 @@
 <?php
-include __DIR__."/database.php";
+include_once __DIR__."/database.php";
 
 class Users{
 	private $db;
@@ -56,6 +56,33 @@ class Users{
 	
 	public function del($id){
 		$this->db->query("DELETE FROM ".$this->users_table." WHERE id = ".$id);
+	}
+	
+	public function getAccountUserId(){
+		return array_key_exists("user_id", $_COOKIE) ? $_COOKIE["user_id"] : null;
+	}
+	
+	public function get_user_permissions(){
+		$user_id = $this->getAccountUserId();
+		$result = $this->db->query("SELECT p.alias, p.name, IF(ISNULL(p.resource_table), 'boolean', 'list') AS type, pv.value FROM users u 
+                LEFT JOIN permissions_values pv ON pv.group_id = u.group_id
+                LEFT JOIN permissions p ON pv.permission_id = p.id
+                WHERE u.id = ".$user_id);
+		$result_array = array();
+		if($result){
+			while($res = $result->fetch_assoc()){
+				switch($res["type"]){
+					case "boolean":
+						$res["value"] = $res["value"] === "true";
+						break;
+					case "list":
+						$res["value"] = explode(",", $res["value"]);
+						break;
+				}
+				array_push($result_array, $res);
+			}	
+		}				
+		return $result_array;
 	}
 }
 ?>

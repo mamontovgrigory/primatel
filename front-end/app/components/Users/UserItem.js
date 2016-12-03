@@ -1,5 +1,5 @@
 export default class UserItem extends React.Component {
-    constructor(props){
+    constructor(props) {
         super();
 
         this.state = {
@@ -58,14 +58,18 @@ export default class UserItem extends React.Component {
     }
 
     render() {
+        var self = this;
+        var group = _.find(self.state.groupsList, function (g) {
+            return g.id === self.state.groupId;
+        });
         return (
             <li className={this.state.id ? '' : 'active'}>
                 <div className={this.state.id ? 'collapsible-header' : 'collapsible-header active'}>
                     <i className="material-icons">perm_identity</i>
                     {this.state.login}
                     {
-                        this.state.isAdmin ?
-                            <span className="background-system text-white p-5 m-l-5">Администратор</span>
+                        group ?
+                            <span className="background-system text-white p-5 m-l-5">{group.name}</span>
                             :
                             null
                     }

@@ -276,6 +276,13 @@ export default {
         }
     },
 
+    USERS_GET_ACCOUNT:
+    {
+        'channel': 'USERS_GET_ACCOUNT',
+        'title': '',
+        'url': '/get_account.php'
+    },
+
     /*#endregion*/
 
     /*#region groups*/

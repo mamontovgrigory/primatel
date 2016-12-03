@@ -28,20 +28,37 @@ export default class Users extends React.Component {
             });
             mediator.publish(channels.USERS_GET_LIST, null, function (users) {
                 self.setState({
+                    users: []
+                });
+                self.setState({
                     users: users
-                })
+                });
             });
         });
     }
 
     addClickHandler() {
         var self = this;
-        var userNumber = this.state.users.length + 1;
-        mediator.publish(channels.USERS_SAVE, {
-            login: 'user_' + userNumber
-        }, function () {
-            self.usersGetList();
-        });
+
+        var userNumber = this.state.users.length,
+            loginPrefix = 'user_',
+            userLogin = '';
+        var isUnique = false;
+        do {
+            userNumber++;
+            userLogin = loginPrefix + userNumber;
+            isUnique = _.find(this.state.users, function (u) {
+                return u.login === userLogin;
+            });
+            isUnique = !isUnique;
+        } while (!isUnique);
+        if (isUnique) {
+            mediator.publish(channels.USERS_SAVE, {
+                login: userLogin
+            }, function () {
+                self.usersGetList();
+            });
+        }
     }
 
     deleteClickHandler(index) {

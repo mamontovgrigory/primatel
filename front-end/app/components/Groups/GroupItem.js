@@ -2,27 +2,14 @@ export default class UserItem extends React.Component {
     constructor(props) {
         super();
 
-        /*var setting = _.find(this.state.values, function (v) {
-            return parseInt(v.permissionId) === parseInt(el.id);
-        });
-        var value = el.list ? [] : false;
-        if(setting){
-            if (el.list) {
-                value = setting.value.split(',');
-            } else {
-                value = setting.value === 'true';
-            }
-        }
-        console.log(setting, value);*/
-
         var settings = {};
-        _.forEach(props.values, function(val, i){
-            var permission = _.find(props.permissions, function(p){
+        _.forEach(props.values, function (val, i) {
+            var permission = _.find(props.permissions, function (p) {
                 return parseInt(p.id) === parseInt(val.permissionId);
             });
             var value = permission.list ? [] : false;
             if (permission.list) {
-                value = _.map(val.value.split(','), function(v){
+                value = _.map(val.value.split(','), function (v) {
                     return parseInt(v);
                 });
             } else {
@@ -31,14 +18,12 @@ export default class UserItem extends React.Component {
             settings[parseInt(permission.id)] = value;
         });
 
-        console.log(settings);
-
         this.state = {
             id: props.id,
             name: props.name,
             permissions: props.permissions,
             settings: settings
-        }
+        };
     }
 
     componentDidMount() {
@@ -85,8 +70,14 @@ export default class UserItem extends React.Component {
         });
     }
 
-    selectAllCheckboxChangeHandler() {
-
+    selectAllClickHandler(list, permissionId, e) {
+        var settings = this.state.settings;
+        settings[parseInt(permissionId)] = e.target.checked ? _.map(list, function (r) {
+            return parseInt(r.id);
+        }) : [];
+        this.setState({
+            settings: settings
+        });
     }
 
     listItemCheckboxChangeHandler(permissionId, listItemId, e) {
@@ -137,15 +128,14 @@ export default class UserItem extends React.Component {
                                                 <h5 className="m-b-0">{el.name}</h5>
                                             </div>
                                         </div>
-                                        {
-                                            /*<div className="row">
-                                             <div className="input-field col s12 clear-both">
-                                             <input type="checkbox" id={"all" + el.id}
-                                             onChange={() => this.selectAllCheckboxChangeHandler()}/>
-                                             <label htmlFor={"all" + el.id}>Выбрать все</label>
-                                             </div>
-                                             </div>*/
-                                        }
+                                        <div className="row">
+                                            <div className="input-field col s3">
+                                                <input type="checkbox" id={checkboxId}
+                                                       checked={value && el.list.length === value.length}
+                                                       onChange={this.selectAllClickHandler.bind(this, el.list, el.id)}/>
+                                                <label htmlFor={checkboxId}>Выбрать все</label>
+                                            </div>
+                                        </div>
                                         <div className="divider"></div>
                                         <div className="row">
                                             {
@@ -156,7 +146,7 @@ export default class UserItem extends React.Component {
                                                         <div className="input-field col s3" key={li.id}>
                                                             <input type="checkbox" id={"li" + listCheckboxId}
                                                                    value={li.id}
-                                                                   defaultChecked={checked}
+                                                                   checked={checked}
                                                                    onChange={this.listItemCheckboxChangeHandler.bind(this, el.id, li.id)}/>
                                                             <label htmlFor={"li" + listCheckboxId}>{li.name}</label>
                                                         </div>

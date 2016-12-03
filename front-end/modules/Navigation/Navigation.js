@@ -1,5 +1,5 @@
-class Navigation{
-    getItems(properties, callback){
+class Navigation {
+    getItems(properties, callback) {
         var items = [
             {
                 name: 'Пользователи',
@@ -7,7 +7,7 @@ class Navigation{
                 to: 'users',
                 src: require('./content/users.png'),
                 description: 'Создание, редактирование и удаление пользователей системы',
-                roles: [ 'admin' ]
+                rule: "users_manage"
             },
             {
                 name: 'Настройки групп',
@@ -15,30 +15,30 @@ class Navigation{
                 to: 'groups',
                 src: require('./content/groups.png'),
                 description: 'Настройки прав доступа',
-                roles: [ 'admin' ]
+                rule: "groups_manage"
             },
-             /*{
-                name: 'Личные кабинеты',
-                icon: 'contact_phone',
-                to: 'accounts',
-                src: require('./content/accounts.png'),
-                description: 'Личные кабинеты телефонии',
-                roles: [ 'admin' ]
-            },*/
             {
                 name: 'Телефония',
                 icon: 'phone',
                 to: 'telephony',
                 src: require('./content/telephony.png'),
-                description: 'Просмотр статистики и прослушивание записей телефонии',
-                roles: [ 'admin', 'user' ]
+                description: 'Просмотр статистики и прослушивание записей телефонии'
             }
         ];
 
-        items = _.filter(items, function(i){
-            var valid = false;
-            if(system.user){
-                valid = _.indexOf(i.roles, system.user.isAdmin ? 'admin' : 'user') !== -1;
+        items = _.filter(items, function (i) {
+            var valid = true;
+            if (i.rule) {
+                if (system.rules) {
+                    var rule = _.find(system.rules, function(r){
+                        return r.alias === i.rule;
+                    });
+                    if(!rule || !rule.value){
+                        valid = false;
+                    }
+                } else {
+                    valid = false;
+                }
             }
             return valid;
         });
