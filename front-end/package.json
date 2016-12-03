@@ -33,7 +33,6 @@
     "less": "^2.6.1",
     "less-loader": "^2.2.3",
     "lodash": "^4.15.0",
-    "material-icons": "^0.1.0",
     "materialize-css": "^0.97.6",
     "moment": "^2.14.1",
     "node-sass": "^3.7.0",
