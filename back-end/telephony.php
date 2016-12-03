@@ -145,6 +145,21 @@ class Telephony{
 	}
 	
 	public function getListUsers($returnArray = true){
+		$result = $this->db->query("SELECT * FROM ".$this->list_users_table." ORDER BY login");
+			if($returnArray){
+				$result_array = array();
+				if($result){
+					while($res = $result->fetch_assoc()){
+						array_push($result_array, $res);
+					}	
+				}							
+				return $result_array;
+			}else{
+				return $result;
+			}		
+	}
+	
+	public function getListPermittedUsers($returnArray = true){
 		$user_id = array_key_exists("user_id", $_COOKIE) ? $_COOKIE["user_id"] : null;
 		if($user_id){
 			$permissions = $this->db->query("SELECT pv.* FROM USERS u 
