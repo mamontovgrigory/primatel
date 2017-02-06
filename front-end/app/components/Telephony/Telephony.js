@@ -85,6 +85,30 @@ export default class Telephony extends React.Component {
         });
     }
 
+    selectGroupOfficialClickHandler(e) { //TODO: Это все под снос
+        this.setState({
+            loginIds: e.target.checked ? _.map(_.filter(this.state.loginList, function (r) {
+                return _.indexOf([1, 20, 9, 60033, 11, 14, 15, 16, 19, 21, 91501], parseInt(r.id)) !== -1;
+            }), function (r) {
+                return r.id;
+            }) : [],
+            official: e.target.checked ? true : false,
+            unofficial: false
+        });
+    }
+
+    selectGroupUnofficialClickHandler(e){ //TODO: Это все под снос
+        this.setState({
+            loginIds: e.target.checked ? _.map(_.filter(this.state.loginList, function (r) {
+                return _.indexOf([1, 20, 9, 60033, 11, 14, 15, 16, 19, 21, 91501], parseInt(r.id)) === -1;
+            }), function (r) {
+                return r.id;
+            }) : [],
+            official: false,
+            unofficial: e.target.checked ? true : false
+        });
+    }
+
     loginCheckboxChangeHandler(loginId) {
         var index = _.findIndex(this.state.loginIds, function (u) {
             return u === loginId;
@@ -142,7 +166,7 @@ export default class Telephony extends React.Component {
             });
             var $modal = $('#modal1');
             $modal.find('h4').html(login + ' ' + moment(date).format(system.format.date));
-            $modal.openModal({
+            $modal.modal({
                 ready: function () {
                     //$('audio').audioPlayer();
                 },
@@ -152,6 +176,7 @@ export default class Telephony extends React.Component {
                     });
                 }
             });
+            $modal.modal('open');
         });
     }
 
@@ -289,6 +314,20 @@ export default class Telephony extends React.Component {
                                    checked={this.state.loginList && this.state.loginList.length === this.state.loginIds.length}
                                    onClick={this.selectAllClickHandler.bind(this)}/>
                             <label htmlFor={"select-all"}>Выбрать все</label>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="input-field col s3">
+                            <input type="checkbox" id={"select-official"}
+                                   checked={this.state.official && !this.state.unofficial}
+                                   onClick={this.selectGroupOfficialClickHandler.bind(this)}/>
+                            <label htmlFor={"select-official"}>Официальные</label>
+                        </div>
+                        <div className="input-field col s3">
+                            <input type="checkbox" id={"select-unofficial"}
+                                   checked={this.state.unofficial && !this.state.official}
+                                   onClick={this.selectGroupUnofficialClickHandler.bind(this)}/>
+                            <label htmlFor={"select-unofficial"}>Неофициальные</label>
                         </div>
                     </div>
                     <div className="row">

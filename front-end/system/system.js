@@ -4,7 +4,7 @@ import Users from '../app/components/Users/Users';
 import Groups from '../app/components/Groups/Groups';
 
 module.exports = {
-    serverUrl: (NODE_ENV.trim() === 'development' ? 'http://localhost' : window.location.origin) + '/ajax',
+    serverUrl: (NODE_ENV.trim() === 'development' ? 'http://ramazanavtsinov.myjino.ru' : window.location.origin) + '/ajax',
     routes: [
         {
             path: 'index',
