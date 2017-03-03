@@ -40,7 +40,9 @@ export default class Navbar extends React.Component {
         return (
             <nav>
                 <div className="nav-wrapper container">
-                    <a href="#" className="brand-logo right">Primatel 2.0</a>
+                    <a href="#" className="brand-logo right" style={{height: '64px'}}>
+                        <img src={require('./content/logo.png')}/>
+                    </a>
                     <ul id="dropdown-user" className="dropdown-content">
                         <li><a onClick={this.logoutClickHandler.bind(this)}>Выйти</a></li>
                     </ul>
