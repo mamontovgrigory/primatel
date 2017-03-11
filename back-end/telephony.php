@@ -143,12 +143,12 @@ class Telephony{
         {
             return(trim($n));
         }
-
+		
 		foreach($data->data->data as $data_arr){
-			$this->db->query("INSERT INTO ".$this->list_users_table." (".implode(",", $data->data->names).") VALUES ('".implode("','", array_map("trim_array", $data_arr))."')");
+			$this->db->query("INSERT INTO ".$this->list_users_table." (".implode(",", $data->data->names).") VALUES ('".implode("','", array_map("trim_array", $data_arr))."')");	
 		}
 	}
-
+	
 	public function getListUsers($returnArray = true){
 		$result = $this->db->query("SELECT * FROM ".$this->list_users_table." ORDER BY login");
 			if($returnArray){
@@ -156,20 +156,20 @@ class Telephony{
 				if($result){
 					while($res = $result->fetch_assoc()){
 						array_push($result_array, $res);
-					}
-				}
+					}	
+				}							
 				return $result_array;
 			}else{
 				return $result;
-			}
+			}		
 	}
-
+	
 	public function getListPermittedUsers($returnArray = true){
 		$user_id = array_key_exists("user_id", $_COOKIE) ? $_COOKIE["user_id"] : null;
 		if($user_id){
-			$permissions = $this->db->query("SELECT pv.* FROM USERS u
+			$permissions = $this->db->query("SELECT pv.* FROM USERS u 
 			LEFT JOIN groups g ON u.group_id = g.id
-			LEFT JOIN permissions_values pv ON g.id = pv.group_id
+			LEFT JOIN permissions_values pv ON g.id = pv.group_id 
 			INNER JOIN permissions p ON p.id = pv.permission_id
 			WHERE u.id = ".$user_id." AND p.alias = 'list_users'")->fetch_assoc();
 			if($permissions){
@@ -179,19 +179,19 @@ class Telephony{
 					if($result){
 						while($res = $result->fetch_assoc()){
 							array_push($result_array, $res);
-						}
-					}
+						}	
+					}							
 					return $result_array;
 				}else{
 					return $result;
 				}
-			}
-		}
+			}			
+		}		
 	}
-
+	
 	public function updateSips(){
 		$result = $this->getListUsers(false);
-
+		
 		$this->login();
 		while($res = $result->fetch_assoc()){
 			$params = array(
@@ -201,14 +201,14 @@ class Telephony{
 			);
 			$data = $this->primatelApi("listSip", $params);
 			if(gettype($data->data) === "object"){
-				$key = array_search("login", $data->data->names);
+				$key = array_search("login", $data->data->names);		
 				foreach($data->data->data as $data_arr){
 					$this->db->query("INSERT INTO ".$this->list_sips_table." (sip_login, login_id) VALUES ('".$data_arr[$key]."', '".$res["id"]."')");
 				}
-			}
+			}			
 		}
 	}
-
+	
 	public function getCallsTotals($login_ids = array(), $from = null, $to = null, $duration){
 		$from = $from ? $from :  date($this->datetime_format, strtotime('-1 days'));
 		$to = $to ? $to : date($this->datetime_format);
@@ -218,8 +218,8 @@ class Telephony{
 			SELECT lu.login, COUNT(*) as count, DATE(cd.time) as date FROM ".$this->list_users_table." lu
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id
-			WHERE ls.sip_login LIKE '%did%'
-			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."'
+			WHERE ls.sip_login LIKE '%did%' 
+			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' 
 			AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
 			GROUP BY DATE(cd.time), lu.login
 			ORDER BY lu.login";
@@ -229,13 +229,13 @@ class Telephony{
 			"dates" => array(),
 			"data" => array()
 		);
-
+		
 		$template_array = array();
 		for($i = strtotime($from); $i <= strtotime($to); $i += 86400){
 			array_push($result_array["dates"], date($this->date_format,$i));
 			array_push($template_array, 0);
 		}
-
+		
 		if($result){
 			while($res = $result->fetch_assoc()){
 				$login_array = array(
@@ -249,10 +249,10 @@ class Telephony{
 				$result_array["data"][$res["login"]][$key] = $res["count"];
 			}
 		}
-
+		
 		return $result_array;
 	}
-
+	
 	public function updateCallsDetails(){
 		$result = $this->db->query("
 			SELECT ls.*, lu.login FROM `".$this->list_sips_table."` as ls

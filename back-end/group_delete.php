@@ -6,5 +6,7 @@ if($_REQUEST && array_key_exists("id", $_REQUEST)){
 	$groups = new Groups();
 	
 	$result = $groups->del($_REQUEST["id"]);
+	
+	echo json_encode(array("success" => true));
 }
 ?>

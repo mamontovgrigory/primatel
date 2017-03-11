@@ -36,7 +36,7 @@ class Groups{
 	
 	
 	public function getList($returnArray = true){
-		$result = $this->db->query("SELECT * FROM ".$this->groups_table);
+		$result = $this->db->query("SELECT * FROM ".$this->groups_table." ORDER BY id");
 		if($returnArray){
 			$result_array = array();
 			$permissions = $this->getPermissions();
@@ -99,7 +99,9 @@ class Groups{
 		if(array_key_exists("id", $props)){
 			$this->db->query("UPDATE ".$this->groups_table." SET name='".$props["name"]."' WHERE id = ".$props["id"]);
 		}else{
-			$props["id"] = $this->db->query("INSERT INTO ".$this->groups_table." (".implode(",", array_keys($props)).") VALUES ('".implode("','", $props)."')");
+			$this->db->query("INSERT INTO ".$this->groups_table." (name) VALUES ('".$props["name"]."')");
+			$group = $this->db->query("SELECT * FROM ".$this->groups_table." WHERE id = LAST_INSERT_ID()")->fetch_assoc();
+			$props["id"] = $group["id"];
 		}
 		if($props["settings"]){
 			$values = array();

@@ -20,5 +20,7 @@ if($_POST){
 		$props["settings"] = $settings;
 	}	
 	$result = $groups->save($props);
+	
+	echo json_encode(array("success" => true));
 }
 ?>

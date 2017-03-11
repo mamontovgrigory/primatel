@@ -18,5 +18,7 @@ if($_POST){
 		$props["password"] = $users->getPasswordHash($props["password"]);
 	}
 	$result = $users->save($props);
+	
+	echo json_encode(array("success" => true));
 }
 ?>

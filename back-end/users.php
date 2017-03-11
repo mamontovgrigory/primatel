@@ -31,7 +31,9 @@ class Users{
 	}
 	
 	public function getList($returnArray = true){
-		$result = $this->db->query("SELECT id, login, is_admin as isAdmin, group_id as groupId FROM ".$this->users_table);
+		$result = $this->db->query("SELECT u.id, u.login, u.group_id as groupId, g.name as groupName 
+            FROM ".$this->users_table." u
+            LEFT JOIN groups g on u.group_id = g.id");
 		if($returnArray){
 			$result_array = array();
 			while($res = $result->fetch_assoc()){

@@ -1,8 +1,8 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 
-include __DIR__."/telephony.php";
-$telephony = new Telephony();
+include __DIR__."/users.php";
+$users = new Users();
 
-$result = $telephony->getListPermittedUsers();
+$result = $users->getList();
 echo json_encode($result);
