@@ -11,23 +11,54 @@ class Users{
 			`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			`login` VARCHAR(50) UNIQUE, 
 			`password` VARCHAR(60),
-			`is_admin` BOOLEAN
+			`token` VARCHAR(50)
 			)
 		");
 	}
+	
+	function generateCode($length=6) {
+
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPRQSTUVWXYZ0123456789";
+    
+        $code = "";
+    
+        $clen = strlen($chars) - 1;  
+        while (strlen($code) < $length) {
+            $code .= $chars[mt_rand(0,$clen)];  
+        }
+    
+        return $code;
+
+    }
 	
 	public function getPasswordHash($password){
 		return md5($password);
 	}
 	
 	public function login($login, $password){
-		$result = $this->db->query("SELECT id, login, is_admin as isAdmin FROM ".$this->users_table.
-		" WHERE login='".$login."' AND password='".$this->getPasswordHash($password)."'");
-		$result = $result->fetch_assoc();
+	    $where = " WHERE login='".$login."' AND password='".$this->getPasswordHash($password)."'";
+		$result = $this->db->query("SELECT id, login FROM ".$this->users_table.$where)->fetch_assoc();
 		if($result) {			
-			$result["isAdmin"] = $result["isAdmin"] == 1 ? true : false;
+			$token = md5($this->generateCode(10));
+			$expire = time()+60*60*24*30;
+			setcookie("user_id", $result["id"], $expire, "/");
+			setcookie("token", $token, $expire, "/");
+			$this->db->query("UPDATE ".$this->users_table." SET token='".$token."'".$where);
 		}
 		return $result;
+	}
+	
+	public function checkSession(){
+	    $result = null;
+	    if (isset($_COOKIE['user_id']) and isset($_COOKIE['token'])){
+	         $user_data = $this->db->query("SELECT token FROM ".$this->users_table." WHERE id = '".$_COOKIE["user_id"]."' LIMIT 1")->fetch_assoc();
+	         $success = $user_data["token"] === $_COOKIE["token"];
+	         
+	         if($success){
+	             $result = $this->db->query("SELECT id, login FROM ".$this->users_table." WHERE id = ".$_COOKIE["user_id"])->fetch_assoc();
+	         }
+	    }
+	    return $result;
 	}
 	
 	public function getList($returnArray = true){
@@ -37,7 +68,6 @@ class Users{
 		if($returnArray){
 			$result_array = array();
 			while($res = $result->fetch_assoc()){
-				$res["isAdmin"] = $res["isAdmin"] == 1 ? true : false;
 				array_push($result_array, $res);
 			}			
 			return $result_array;
