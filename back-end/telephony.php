@@ -16,6 +16,7 @@ class Telephony{
 	private $list_users_table = "list_users";
 	private $list_sips_table = "list_sips";
 	private $calls_details_table = "calls_details";
+	private $calls_details_comments = "calls_details_comments";
 	private $calls_details_updates_table = "calls_details_updates";
 	
 	private $recordsMaxCount = 1000;
@@ -97,28 +98,6 @@ class Telephony{
 			return $result;
 		}
 				
-	}
-	
-	public function saveAccount($props){
-		if(array_key_exists("id", $props)){
-			$this->db->query("UPDATE ".$this->accounts_table." SET name='".$props["name"]."',account='".$props["account"]."',password=".$props["password"]." WHERE id = ".$props["id"]);
-		}else{
-			$props["id"] = $this->db->query("INSERT INTO ".$this->accounts_table." (".implode(",", array_keys($props)).") VALUES ('".implode("','", $props)."')");
-		}
-		return $props;
-	}
-	
-	public function getListAccounts($returnArray = true){
-		$result = $this->db->query("SELECT * FROM ".$this->accounts_table);
-		if($returnArray){
-			$result_array = array();
-			while($res = $result->fetch_assoc()){
-				array_push($result_array, $res);
-			}			
-			return $result_array;
-		}else{
-			return $result;
-		}
 	}
 	
 	public function login(){
@@ -298,9 +277,10 @@ class Telephony{
 		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
 		if($duration) $and.= " AND duration >= ".$duration;
 		$query = "
-			SELECT cd.*, lu.login FROM ".$this->list_users_table." lu 
+			SELECT cd.*, lu.login, cdc.* FROM ".$this->list_users_table." lu 
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
+			LEFT JOIN ".$this->calls_details_comments." cdc ON cd.callid = cdc.id
 			WHERE ls.sip_login LIKE '%did%' 			
 			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from))."' 
 			AND '".date($this->datetime_format,strtotime($to))."'".$and." 
@@ -357,6 +337,10 @@ class Telephony{
 	public function getUpdateDate(){
 		$result = $this->db->query("SELECT datetime FROM ".$this->calls_details_updates_table." ORDER BY id DESC LIMIT 1;");
 		return $result->fetch_assoc()["datetime"];
+	}
+	
+	public function saveComments($comments){		
+		$this->db->query("REPLACE INTO ".$this->calls_details_comments." (".implode(",", array_keys($comments)).") VALUES ('".implode("','", $comments)."')");	
 	}
 	
 	public function update(){

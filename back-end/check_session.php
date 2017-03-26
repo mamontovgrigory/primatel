@@ -5,5 +5,12 @@ header('Access-Control-Allow-Credentials: true');
 include __DIR__."/users.php";
 $users = new Users();
 
-$result = $users->getList();
+//unset($_COOKIE['test']);
+//unset($_COOKIE['token']);
+
+ 
+
+$result = $users->checkSession();
+
 echo json_encode($result);
+?>

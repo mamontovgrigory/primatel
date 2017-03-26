@@ -1,5 +1,6 @@
 <?php
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: http://localhost:9000');
+header('Access-Control-Allow-Credentials: true');
 
 if($_REQUEST && $_REQUEST["loginId"] && $_REQUEST["date"]){
 	include __DIR__."/telephony.php";
@@ -11,11 +12,16 @@ if($_REQUEST && $_REQUEST["loginId"] && $_REQUEST["date"]){
 	$result_array = array();
 	while($res = $result->fetch_assoc()){			
 		array_push($result_array, array(
+			"id" => $res["id"],
 			"time" => $res["time"],
 			"numfrom" => $telephony->formatPhoneNumber($res["numfrom"]),
 			"numto" => $telephony->formatPhoneNumber($res["numto"]),
 			"duration" => $telephony->formatSeconds($res["duration"]),
-			"callid" => $res["duration"] != 0 ? $res["callid"] : NULL
+			"callid" => $res["duration"] != 0 ? $res["callid"] : NULL,
+			"mark" => $res["mark"],
+			"model" => $res["model"],
+			"comment" => $res["comment"],
+			"useful" => $res["useful"],
 		));
 	}
 	echo json_encode($result_array);
