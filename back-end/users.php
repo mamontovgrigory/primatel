@@ -38,14 +38,23 @@ class Users{
 	public function login($login, $password){
 	    $where = " WHERE login='".$login."' AND password='".$this->getPasswordHash($password)."'";
 		$result = $this->db->query("SELECT id, login FROM ".$this->users_table.$where)->fetch_assoc();
+		$expire = time()+60*60*24*30;
 		if($result) {			
 			$token = md5($this->generateCode(10));
-			$expire = time()+60*60*24*30;
 			setcookie("user_id", $result["id"], $expire, "/");
 			setcookie("token", $token, $expire, "/");
 			$this->db->query("UPDATE ".$this->users_table." SET token='".$token."'".$where);
+		}else{
+		    setcookie("user_id", null, $expire, "/");
+		    setcookie("token", null, $expire, "/");
 		}
 		return $result;
+	}
+	
+	public function logout(){
+	    $expire = time()+60*60*24*30;
+		setcookie("user_id", null, $expire, "/");
+		setcookie("token", null, $expire, "/");
 	}
 	
 	public function checkSession(){

@@ -53,7 +53,7 @@ class Groups{
 	}
 	
 	public function getPermissions($returnArray = true){
-		$result = $this->db->query("SELECT * FROM ".$this->permissions_table);
+		$result = $this->db->query("SELECT * FROM ".$this->permissions_table." ORDER BY sort");
 		if($returnArray){
 			$result_array = array();
 			while($res = $result->fetch_assoc()){	

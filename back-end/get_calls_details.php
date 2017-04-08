@@ -16,12 +16,13 @@ if($_REQUEST && $_REQUEST["loginId"] && $_REQUEST["date"]){
 			"time" => $res["time"],
 			"numfrom" => $telephony->formatPhoneNumber($res["numfrom"]),
 			"numto" => $telephony->formatPhoneNumber($res["numto"]),
-			"duration" => $telephony->formatSeconds($res["duration"]),
-			"callid" => $res["duration"] != 0 ? $res["callid"] : NULL,
+			"duration" => $res["duration"],
+			"callid" => $res["callid"],
 			"mark" => $res["mark"],
 			"model" => $res["model"],
 			"comment" => $res["comment"],
 			"useful" => $res["useful"],
+			"objective" => $res["objective"]
 		));
 	}
 	echo json_encode($result_array);

@@ -16,7 +16,7 @@ class Telephony{
 	private $list_users_table = "list_users";
 	private $list_sips_table = "list_sips";
 	private $calls_details_table = "calls_details";
-	private $calls_details_comments = "calls_details_comments";
+	private $calls_details_comments_table = "calls_details_comments";
 	private $calls_details_updates_table = "calls_details_updates";
 	
 	private $recordsMaxCount = 1000;
@@ -129,18 +129,18 @@ class Telephony{
 	}
 	
 	public function getListUsers($returnArray = true){
-		$result = $this->db->query("SELECT * FROM ".$this->list_users_table." ORDER BY login");
-			if($returnArray){
-				$result_array = array();
-				if($result){
-					while($res = $result->fetch_assoc()){
-						array_push($result_array, $res);
-					}	
-				}							
-				return $result_array;
-			}else{
-				return $result;
-			}		
+		$result = $this->db->query("SELECT * FROM ".$this->list_users_table." WHERE active = 1 ORDER BY login");
+		if($returnArray){
+			$result_array = array();
+			if($result){
+				while($res = $result->fetch_assoc()){
+					array_push($result_array, $res);
+				}	
+			}							
+			return $result_array;
+		}else{
+			return $result;
+		}		
 	}
 	
 	public function getListPermittedUsers($returnArray = true){
@@ -198,8 +198,8 @@ class Telephony{
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id
 			WHERE ls.sip_login LIKE '%did%' 
-			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from)-86400)."' 
-			AND '".date($this->datetime_format,strtotime($to)+86400)."'".$and."
+			AND cd.time BETWEEN '".date($this->date_format,strtotime($from)-86400)." 23:59:59' 
+			AND '".date($this->date_format,strtotime($to)+86400)." 00:00:00'".$and."
 			GROUP BY DATE(cd.time), lu.login
 			ORDER BY lu.login";
 		$result = $this->db->query($query);
@@ -215,19 +215,25 @@ class Telephony{
 			array_push($template_array, 0);
 		}
 		
-		if($result){
-			while($res = $result->fetch_assoc()){
-				$login_array = array(
-					"login" => $res["login"],
-					"data" => array()
-				);
-				$key = array_search($res["date"], $result_array["dates"]);
-				if(!array_key_exists($res["login"], $result_array["data"])){
-					$result_array["data"][$res["login"]] = $template_array;
-				}
-				$result_array["data"][$res["login"]][$key] = $res["count"];
-			}
+		$users_query_result = $this->db->query("SELECT * FROM ".$this->list_users_table." WHERE id IN (".implode(",", $login_ids).")");
+		
+		if($users_query_result){
+		    while($res = $users_query_result->fetch_assoc()){
+		        $result_array["data"][$res["login"]] = $template_array;
+		    }
+		
+    		if($result){
+    			while($res = $result->fetch_assoc()){
+    				$key = array_search($res["date"], $result_array["dates"]);
+    				if(!array_key_exists($res["login"], $result_array["data"])){
+    					$result_array["data"][$res["login"]] = $template_array;
+    				}
+    				$result_array["data"][$res["login"]][$key] = $res["count"];
+    			}
+    		}
+		    
 		}
+		
 		
 		return $result_array;
 	}
@@ -277,10 +283,10 @@ class Telephony{
 		$and = count($login_ids) != 0 ? " AND lu.id IN (".implode(",", $login_ids).")" : "";
 		if($duration) $and.= " AND duration >= ".$duration;
 		$query = "
-			SELECT cd.*, lu.login, cdc.* FROM ".$this->list_users_table." lu 
+			SELECT cd.*, lu.login, cdc.mark, cdc.model, cdc.objective, cdc.comment FROM ".$this->list_users_table." lu 
 			JOIN ".$this->list_sips_table." ls ON ls.login_id = lu.id 
 			JOIN ".$this->calls_details_table." cd ON cd.sip_login_id = ls.id 
-			LEFT JOIN ".$this->calls_details_comments." cdc ON cd.callid = cdc.id
+			LEFT JOIN ".$this->calls_details_comments_table." cdc ON cd.callid = cdc.id
 			WHERE ls.sip_login LIKE '%did%' 			
 			AND cd.time BETWEEN '".date($this->datetime_format,strtotime($from))."' 
 			AND '".date($this->datetime_format,strtotime($to))."'".$and." 
@@ -340,7 +346,19 @@ class Telephony{
 	}
 	
 	public function saveComments($comments){		
-		$this->db->query("REPLACE INTO ".$this->calls_details_comments." (".implode(",", array_keys($comments)).") VALUES ('".implode("','", $comments)."')");	
+		$this->db->query("REPLACE INTO ".$this->calls_details_comments_table." (".implode(",", array_keys($comments)).") VALUES ('".implode("','", $comments)."')");	
+	}
+	
+	public function getUniqueComments($name){
+	    $result = $this->db->query("SELECT DISTINCT ".$name." FROM ".$this->calls_details_comments_table);
+		
+		$result_array = array();
+		if($result){
+			while($res = $result->fetch_assoc()){
+				array_push($result_array, $res[$name]);
+			}	
+		}
+		return $result_array;	
 	}
 	
 	public function update(){

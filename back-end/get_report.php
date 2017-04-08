@@ -19,7 +19,7 @@ $to = array_key_exists("to", $_REQUEST) && $_REQUEST["to"] ?
 
 $result = $telephony->getCallsDetails($login_ids, $from, $to, $duration, false);
 
-$titles = array("Клиент", "Дата и время", "Исходящий", "Входящий", "Длительность");
+$titles = array("Клиент", "Дата и время", "Исходящий", "Входящий", "Длительность", "Марка", "Модель", "Комментарий", "Целевой");
 
 $data = array();
 
@@ -31,7 +31,11 @@ while($res = $result->fetch_assoc()){
 		date($telephony->datetime_format,strtotime($res["time"])),
 		$telephony->formatPhoneNumber($res["numfrom"]),
 		$telephony->formatPhoneNumber($res["numto"]),
-		$telephony->formatSeconds($res["duration"])
+		$telephony->formatSeconds($res["duration"]),
+		$res["mark"],
+		$res["model"],
+		$res["comment"],
+		$res["objective"]
 	));
 }
 
