@@ -7,10 +7,6 @@ if($_POST){
 	$users = new Users();
 
 	$props = $_POST;
-	$props["is_admin"] = array_key_exists("isAdmin", $props) && $props["isAdmin"] === "true" ? 1 : 0;
-	if(array_key_exists("isAdmin", $props)){		
-		unset($props["isAdmin"]);
-	}
 	$props["group_id"] = array_key_exists("groupId", $props) && $props["groupId"] ? $props["groupId"] : 0;
 	if(array_key_exists("groupId", $props)){		
 		unset($props["groupId"]);
