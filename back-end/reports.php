@@ -15,6 +15,7 @@ class Reports{
 		// disposition / encoding on response body
 		header("Content-Disposition: attachment;filename={$filename}");
 		header("Content-Transfer-Encoding: binary");
+		header("content-type:application/csv;charset=windows-1251");
 	}
 	
 	public function array_to_report(array &$array, $titles) {

@@ -349,8 +349,8 @@ class Telephony{
 		$this->db->query("REPLACE INTO ".$this->calls_details_comments_table." (".implode(",", array_keys($comments)).") VALUES ('".implode("','", $comments)."')");	
 	}
 	
-	public function getUniqueComments($name){
-	    $result = $this->db->query("SELECT DISTINCT ".$name." FROM ".$this->calls_details_comments_table);
+	public function getUniqueComments($name, $login_id){
+	    $result = $this->db->query("SELECT DISTINCT ".$name." FROM ".$this->calls_details_comments_table." WHERE login_id = ".$login_id);
 		
 		$result_array = array();
 		if($result){
@@ -361,11 +361,39 @@ class Telephony{
 		return $result_array;	
 	}
 	
+	public function updateListUsersNumbers(){
+	    $query = "SELECT lu . * , cd.numto
+            FROM ".$this->list_users_table." lu
+            LEFT JOIN ".$this->list_sips_table." ls ON lu.id = ls.login_id
+            LEFT JOIN ".$this->calls_details_table." cd ON ls.id = cd.sip_login_id
+            WHERE ls.sip_login LIKE '%_did%'
+            GROUP BY cd.numto";
+        
+        $result = $this->db->query($query);
+		
+		$result_array = array();
+		if($result){
+			while($res = $result->fetch_assoc()){
+			    if($result_array[$res["id"]]){
+			        $result_array[$res["id"]] = $result_array[$res["id"]].", ".$res["numto"];
+			    }else{
+			        $result_array[$res["id"]] = $res["numto"];    
+			    }
+			}	
+		}
+		foreach($result_array as $user_id => $numbers){
+		    $this->db->query("UPDATE ".$this->list_users_table." SET numbers = '".$numbers."' WHERE id = ".$user_id);
+		}
+		
+		return $result_array;
+	}
+	
 	public function update(){
 		echo "update start";		
 		$this->updateListUsers();
 		$this->updateSips();
 		$this->updateCallsDetails();
+		$this->updateListUsersNumbers();
 		$this->db->query("INSERT INTO ".$this->calls_details_updates_table." (datetime) VALUES ('".date($this->datetime_format)."')");
 		echo "update finished";
 	}

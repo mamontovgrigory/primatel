@@ -19,7 +19,13 @@ $to = array_key_exists("to", $_REQUEST) && $_REQUEST["to"] ?
 
 $result = $telephony->getCallsDetails($login_ids, $from, $to, $duration, false);
 
-$titles = array("Êëèåíò", "Äàòà è âðåìÿ", "Èñõîäÿùèé", "Âõîäÿùèé", "Äëèòåëüíîñòü", "Ìàðêà", "Ìîäåëü", "Êîììåíòàðèé", "Öåëåâîé");
+function convCharset($string)
+{
+    return(iconv("UTF-8", "windows-1251", $string));
+}
+
+$titles = array_map("convCharset", array("ÐšÐ»Ð¸ÐµÐ½Ñ‚", "Ð”Ð°Ñ‚Ð° Ð¸ Ð²Ñ€ÐµÐ¼Ñ", "Ð˜ÑÑ…Ð¾Ð´ÑÑ‰Ð¸Ð¹", "Ð’Ñ…Ð¾Ð´ÑÑ‰Ð¸Ð¹", "Ð”Ð»Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ÑÑ‚ÑŒ", "ÐœÐ°Ñ€ÐºÐ°", "ÐœÐ¾Ð´ÐµÐ»ÑŒ", "ÐšÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¹", "Ð¦ÐµÐ»ÐµÐ²Ð¾Ð¹"));
+
 
 $data = array();
 
@@ -32,10 +38,10 @@ while($res = $result->fetch_assoc()){
 		$telephony->formatPhoneNumber($res["numfrom"]),
 		$telephony->formatPhoneNumber($res["numto"]),
 		$telephony->formatSeconds($res["duration"]),
-		$res["mark"],
-		$res["model"],
-		$res["comment"],
-		$res["objective"]
+		convCharset($res["mark"]),
+		convCharset($res["model"]),
+		convCharset($res["comment"]),
+		convCharset($res["objective"])
 	));
 }
 

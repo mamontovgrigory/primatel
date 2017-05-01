@@ -61,7 +61,7 @@ class Groups{
 				if($resource_table){
 					$list = array();
 					$name_column = $res["name_column"] ? $res["name_column"] : "name";
-					$list_res = $this->db->query("SELECT id, ".$name_column." as name FROM ".$resource_table);
+					$list_res = $this->db->query("SELECT id, ".$name_column." as name FROM ".$resource_table." WHERE active = 1");
 					while($li = $list_res->fetch_assoc()){
 						array_push($list, $li);
 					}
